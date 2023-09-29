@@ -1,0 +1,33 @@
+{% extends "customer/base.html" %}
+
+{% block title %} Notifications {% endblock title %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+    <!-- Add any CSS styles specific to this page if needed -->
+{% endblock stylesheets %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <h1 class="mt-5 mb-4">Notifications</h1>
+        <div class="card">
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for notification_id, notification in notifications.items() %}
+                        <li class="list-group-item {% if notification.read %}list-group-item-light{% endif %}">
+                            <p>{{ notification.message }}</p>
+                            <small class="text-muted">Timestamp: {{notification_id}}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+    <!-- Add any JavaScript specific to this page if needed -->
+{% endblock javascripts %}

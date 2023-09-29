@@ -1,0 +1,97 @@
+{% extends "courier/base.html" %}
+
+{% block title %} Update Delivery {% endblock title %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+<!-- Add these lines to include Leaflet CSS and JavaScript -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Add any CSS styles specific to this page if needed -->
+{% endblock stylesheets %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <h1 class="mt-5 mb-4">Update Delivery</h1>
+        <form method="POST" action="/dashboard/update_delivery">
+            <div class="mb-3">
+                <label for="order_id" class="form-label">Order ID</label>
+                <select class="form-select" id="order_id" name="order_id" required>
+                    {% for order in order_ids %}
+                    {% if order.status != "Delivered" %}
+                        <option value="{{ id }}">{{ order.id }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status" required>
+                    <option value="In Transit">In Transit</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Pickup">Pickup</option>
+                    <option value="Arrived at Warehouse">Arrived at Warehouse</option>
+                    <!-- Add more status options as needed -->
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input type="text" class="form-control" id="location" name="location" required>
+            </div>
+            <div id="map" style="height: 400px;"  class="mb-3"></div>
+            
+            <div class="mb-3">
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+                
+            </div>
+            <button type="submit" class="btn btn-primary">Update Delivery</button>
+            
+        </form>
+    </div>
+</main>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+    <!-- Add any JavaScript specific to this page if needed -->
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([0, 0], 13);
+    
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+    
+    
+        // Function to update the marker's location
+        function updateLocation() {
+            console.log("Updating location..."); // Debugging statement
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+                console.log("Location updated."); // Debugging statement
+            } else { 
+                console.log("Geolocation is not supported by this browser.");
+            }
+            function showPosition(position) {
+                var latitude = position.coords.latitude;
+                var longitude = position.coords.longitude;
+
+                // Update the hidden input fields with latitude and longitude values
+                document.getElementById("latitude").value = latitude;
+                document.getElementById("longitude").value = longitude;
+                var newLatLng = L.latLng(position.coords.latitude,position.coords.longitude); // Example coordinates (latitude, longitude)
+                map.setView(newLatLng, 19);
+                L.marker(newLatLng).addTo(map);
+            }
+        }
+        var currentLocationMarker;
+        updateLocation();
+    </script>
+    
+{% endblock javascripts %}

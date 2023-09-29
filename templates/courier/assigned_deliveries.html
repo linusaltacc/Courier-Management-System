@@ -1,0 +1,162 @@
+{% extends "courier/base.html" %}
+
+{% block title %} Assigned Deliveries {% endblock %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+    <!-- Add any CSS styles specific to this page if needed -->
+{% endblock stylesheets %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <h1 class="mt-5 mb-4">All Orders</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Sender Name</th>
+                        <th>Recipient Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through orders and generate rows -->
+                    {% for order in orders %}
+                        {% if order.status != "Delivered" %}
+                            <tr>
+                                <td>{{ order_ids[loop.index0] }}</td>
+                                <td>{{ order.sender_name }}</td>
+                                <td>{{ order.recipient_name }}</td>
+                                <td>{{ order.status }}</td>
+                                <td>
+                                    <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewOrderModal{{ loop.index }}">View</a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+                    <h1>Delivered Orders</h1>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Sender Name</th>
+                                <th>Recipient Name</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                    <tbody>
+                    {% for order in orders %}
+                        {% if order.status == "Delivered" %}
+                            <tr>
+                                <td>{{ order_ids[loop.index0] }}</td>
+                                <td>{{ order.sender_name }}</td>
+                                <td>{{ order.recipient_name }}</td>
+                                <td>{{ order.status }}</td>
+                                <td>
+                                    <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewOrderModal{{ loop.index }}">View</a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- View and Edit Modals -->
+{% for order in orders %}
+    <!-- View Order Modal -->
+    <div class="modal fade" id="viewOrderModal{{ loop.index }}" tabindex="-1" aria-labelledby="viewOrderModal{{ loop.index }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewOrderModal{{ loop.index }}Label">View Order - {{ order.order_id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add content here to display order details -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Sender Details</h4>
+                            <p><strong>Name:</strong> {{ order.sender_name }}</p>
+                            <p><strong>Contact:</strong> {{ order.sender_contact }}</p>
+                            <p><strong>Address:</strong> {{ order.sender_address }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Recipient Details</h4>
+                            <p><strong>Name:</strong> {{ order.recipient_name }}</p>
+                            <p><strong>Contact:</strong> {{ order.recipient_contact }}</p>
+                            <p><strong>Address:</strong> {{ order.recipient_address }}</p>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h4>Order Details</h4>
+                            <p><strong>Pickup Date:</strong> {{ order.pickup_date }}</p>
+                            <p><strong>Package Weight (kg):</strong> {{ order.package_weight }}</p>
+                            <p><strong>Package Details:</strong> {{ order.package_details }}</p>
+                            <p><strong>Additional Notes:</strong> {{ order.additional_notes }}</p>
+                            <p><strong>Delivery Preference:</strong> {{ order.delivery_preference }}</p>
+                            <p><strong>Status:</strong> {{ order.status }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>User Details</h4>
+                            <p><strong>User ID:</strong> {{ order.user_id }}</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endfor %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function assignCourier(order_id, modalIndex) {
+        // Get the selected courier_id from the select element
+        var courierSelect = document.querySelector(`#courierSelect${modalIndex}`);
+        var courier_id = courierSelect.value;
+
+        var data = {
+            'order_id': order_id,
+            'courier_id': courier_id
+        };
+
+        $.ajax({
+            url: '/assign_courier',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(response) {
+                // Handle success response here
+                $('#confirmationMessage').fadeIn();
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle error response here
+                console.error(error);
+            }
+});
+    }
+</script>
+
+
+
+{% endblock javascripts %}

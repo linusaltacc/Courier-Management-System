@@ -1,0 +1,122 @@
+{% extends "admin/base.html" %}
+
+{% block title %} All couriers {% endblock %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+    <!-- Add any CSS styles specific to this page if needed -->
+{% endblock stylesheets %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <h1 class="mt-5 mb-4">All Couriers</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Courier ID</th>
+                        <th>Courier Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through couriers and generate rows -->
+                    {% for courier in couriers %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ courier_ids[loop.index0] }}</td>
+                            <td>{{ courier.username }}</td>
+                            <td>{{ courier.status }}</td>
+                            <td>
+                                <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewCourierModal{{ loop.index }}">View</a>
+                                <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editCourierModal{{ loop.index }}">Edit</a>
+                                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- View and Edit Modals -->
+{% for courier in couriers %}
+    <!-- View courier Modal -->
+    <div class="modal fade" id="viewCourierModal{{ loop.index }}" tabindex="-1" aria-labelledby="viewCourierModal{{ loop.index }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewCourierModal{{ loop.index }}Label">View Courier - {{ courier.username }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add content here to display courier details -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Courier Details</h4>
+                            <p><strong>Name:</strong> {{ courier.username }}</p>
+                            <p><strong>Contact:</strong> {{ courier.phone }}</p>
+                            <p><strong>Address:</strong> {{ courier.email }}</p>
+                            <p><strong>Deliveries:</strong></p>
+                           
+                                {% for delivery in deliveries[loop.index0] %}
+                                    {% if delivery.order_id == null %}
+                                        <p>No deliveries assigned</p>
+                                    {% else %}
+                                    <p><strong>Order ID:</strong> {{ delivery.order_id }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Courier Modal -->
+<div class="modal fade" id="editCourierModal{{ loop.index }}" tabindex="-1" aria-labelledby="editCourierModal{{ loop.index }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCourierModal{{ loop.index }}Label">Edit Courier - {{ courier_ids[loop.index0] }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/api/edit_courier/{{ courier_ids[loop.index0] }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" value="{{ courier.username }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ courier.phone }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="email" name="email" value="{{ courier.email }}">
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-gray-800" data-bs-dismiss="modal">Edit Courier</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endfor %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+
+{% endblock javascripts %}

@@ -1,0 +1,112 @@
+{% extends "admin/base.html" %}
+
+{% block title %} All customers {% endblock %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+    <!-- Add any CSS styles specific to this page if needed -->
+{% endblock stylesheets %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <h1 class="mt-5 mb-4">All customers</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>customer ID</th>
+                        <th>customer Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through customers and generate rows -->
+                    {% for customer in customers %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ customer_ids[loop.index0] }}</td>
+                            <td>{{ customer.username }}</td>
+                            <td>
+                                <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewcustomerModal{{ loop.index }}">View</a>
+                                <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editcustomerModal{{ loop.index }}">Edit</a>
+                                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- View and Edit Modals -->
+{% for customer in customers %}
+    <!-- View customer Modal -->
+    <div class="modal fade" id="viewcustomerModal{{ loop.index }}" tabindex="-1" aria-labelledby="viewcustomerModal{{ loop.index }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewcustomerModal{{ loop.index }}Label">View customer - {{ customer.username }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add content here to display customer details -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>customer Details</h4>
+                            <p><strong>Name:</strong> {{ customer.username }}</p>
+                            <p><strong>Phone:</strong> {{ customer.phone }}</p>
+                            <p><strong>Email:</strong> {{ customer.email }}</p>
+z
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Edit customer Modal -->
+<div class="modal fade" id="editcustomerModal{{ loop.index }}" tabindex="-1" aria-labelledby="editcustomerModal{{ loop.index }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editcustomerModal{{ loop.index }}Label">Edit customer - {{ customer_ids[loop.index0] }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/api/edit_customer/{{ customer_ids[loop.index0] }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" value="{{ customer.username }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ customer.phone }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="email" name="email" value="{{ customer.email }}">
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-gray-800" data-bs-dismiss="modal">Edit customer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endfor %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+
+{% endblock javascripts %}

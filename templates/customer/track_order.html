@@ -1,0 +1,119 @@
+{% extends "/customer/base.html" %}
+
+{% block title %} All Orders {% endblock %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+    <!-- Add any CSS styles specific to this page if needed -->
+    <link rel="stylesheet" href="http://unpkg.com/leaflet@latest/dist/leaflet.css" />
+
+{% endblock stylesheets %}
+
+{% block content %}
+<main>
+    <script src="http://unpkg.com/leaflet@latest/dist/leaflet.js"></script>
+    <div class="container">
+        <h1 class="mt-5 mb-4">All Orders</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Sender Name</th>
+                        <th>Recipient Name</th>
+                        <th>Current Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through orders and generate rows -->
+                    {% for order in orders %}
+                    {% if order.status != "Delivered" %}
+                        <tr>
+                            <td>{{ loop.index0 + 1 }}</td>
+                            <td>{{ order.sender_name }}</td>
+                            <td>{{ order.recipient_name }}</td>
+                            <td>{{ order.status }}</td>
+                            <td>
+                                <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#trackOrderModal{{ loop.index }}">Track</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- View and track Modals -->
+{% for order in orders %}
+    <!-- View Order Modal -->
+    <div class="modal fade" id="trackOrderModal{{ loop.index }}" tabindex="-1" aria-labelledby="trackOrderModal{{ loop.index }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4>Tracking History</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                <!-- Map -->
+                <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+                <script>
+                    
+                // $(document).ready(function () {
+
+                //     var map = L.map('map').setView([{{order.latitude}}, {{order.longitude}}], 15);
+
+                //     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                //         maxZoom: 16,
+                //     }).addTo(map);
+
+                //     L.marker([{{order.latitude}}, {{order.longitude}}]).addTo(map)
+                //         .bindPopup('{{order.status}}')
+                //         .openPopup();
+                // });
+                // </script>
+                <!-- <div id="map" class="map-container" style="width: 100%; height: 400px;" class="mb-3"> -->
+                <iframe class="map-container"  src="//maps.google.com/maps?q={{order.latitude}},{{order.longitude}}&z=15&output=embed" style="width: 100%; height: 400px;"></iframe>
+                </div>
+                    <!-- Tracking History -->
+                    <div class="mt-1">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for timestamp, tracking_entry in order.tracking_history.items() %}
+                                    <tr>
+                                        <td>{{ timestamp }}</td>
+                                        <td>{{ tracking_entry.location }}</td>
+                                        <td>{{ tracking_entry.status }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endfor %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+{% endblock javascripts %}

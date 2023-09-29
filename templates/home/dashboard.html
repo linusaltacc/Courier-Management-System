@@ -1,0 +1,270 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+    <div class="row">
+        <div class="mb-5"></div>
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon-shape icon-shape-primary rounded me-4 me-sm-0">
+                                <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg>
+                            </div>
+                            <div class="d-sm-none">
+                                <h2 class="h5">Total Products</h2>
+                                <h3 class="fw-extrabold mb-1">{{total_products}}</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h6 text-gray-400 mb-0">Total Products</h2>
+                                <h3 class="fw-extrabold mb-2">{{total_products}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon-shape icon-shape-secondary rounded me-4 me-sm-0">
+                                <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <div class="d-sm-none">
+                                <h2 class="fw-extrabold h5">Total Locations</h2>
+                                <h3 class="mb-1">{{total_locations}}</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h6 text-gray-400 mb-0">Total Locations</h2>
+                                <h3 class="fw-extrabold mb-2">{{total_locations}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon-shape icon-shape-tertiary rounded me-4 me-sm-0">
+                                <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <div class="d-sm-none">
+                                <h2 class="fw-extrabold h5"> Total Movements </h2>
+                                <h3 class="mb-1">{{total_movements}}</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h6 text-gray-400 mb-0"> Total Movements</h2>
+                                <h3 class="fw-extrabold mb-2">{{total_movements}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 mb-4">
+            <div class="card bg-white-100 border-0 shadow">
+                <div class="card-header d-sm-flex flex-row align-items-center flex-0">
+                    <div class="d-block mb-3 mb-sm-0">
+                        <div class="fs-5 fw-normal mb-2">Product Quantities in Location </div>
+                    </div>
+                </div>
+                <div class="line-chart"></div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-12 col-xl-8">
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="card border-0 shadow">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h2 class="fs-5 fw-bold mb-0">Recent Movements</h2>
+                                </div>
+                                <div class="col text-end">
+                                    <a href="/movements" class="btn btn-sm btn-primary">See all</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            {% if movements|length < 1 %}
+                            <center><h4>There are no Recent Movements</h4></center>
+                            {% else %}
+                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+                                    {% for movement in movements%}
+                                    <tr>
+                                        <td>{{ movement.movement_id }}</td>
+                                        <td>{{ movement.product_id }}</td>
+                                        <td>{{ movement.qty }}</td>
+                                        <td>{{ movement.from_location }}</td>
+                                        <td>{{ movement.to_location }}</td>
+                                        <td>{{ movement.movement_time }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% endif %}
+                    </div>
+                    </div>
+                </div>
+                
+                
+            </div>
+        </div>
+        <div class="col-12 col-xl-4">
+            <div class="col-12 px-0 mb-4">
+                <div class="card border-0 shadow">
+                    <div class="card-header d-flex flex-row align-items-center flex-0 border-bottom">
+                        <div class="d-block">
+                            <div class="h5 fw-normal text-gray mb-2">Movements over time</div>
+                        </div>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="bar-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header">Product Balance</div>
+        <div class="card-body">
+            <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table mr-1"></i>
+                Product Balance Report
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                                
+                    {% if balance|length < 1 %}
+                    <h4>There are no Movements, add one above</h4>
+                    {% else %}
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Warehouse</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Warehouse</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            
+                            {% for pkey, values in balance.items() %}
+                                {% set count = values|length() %}
+                                <tr>
+                                    <td>{{pkey}}</td>
+                                    {% for key, value in values.items() %}
+                                        <td>{{key}}</td>
+                                        <td>{{value.qty}}</td>
+                                        {% if values|length() > 1 %}
+                                            {% if values|last != key %}
+                                                </tr>
+                                                <tr>
+                                                    <td>{{pkey}}</td>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                                
+                        </tbody>
+                    </table>
+                    {% endif %}
+            </div>
+        </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+    // Load the line chart using Chartist.js
+    new Chartist.Line('.line-chart', {
+        labels: {{ location_ids | tojson }},
+        series: [
+            {{ total_quantities | tojson }}
+        ]
+    }, {
+        fullWidth: true,
+        chartPadding: {
+            right: 40
+        },
+        plugins: [
+            Chartist.plugins.tooltip()
+        ]
+    });
+
+    new Chartist.Bar('.bar-chart', {
+            labels: {{ labels|tojson }},
+            series: [{{ data|tojson }}]
+        }, {
+            low: 0,
+            showArea: true,
+            plugins: [
+                Chartist.plugins.tooltip()
+            ],
+            axisX: {
+                // On the x-axis start means top and end means bottom
+                position: 'end'
+            },
+            axisY: {
+                // On the y-axis start means left and end means right
+                showGrid: false,
+                showLabel: false,
+                offset: 0
+            }
+        });
+</script>
+{% endblock javascripts %}

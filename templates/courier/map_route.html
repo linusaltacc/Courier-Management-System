@@ -1,0 +1,36 @@
+{% extends "/courier/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<main>
+    <div class="mb-3">
+        <label for="order_id" class="form-label">Order ID</label>
+        <select class="form-select" id="order_id" name="order_id" onchange="location = this.value;" required>
+            <option value="">Select Order ID</option>
+            {% for order in order_ids %}
+            {% if order.status != "Delivered" %}
+                <option value="/dashboard/map/{{ order }}">{{ order }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+<!-- partial -->
+
+</main>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+</script>
+{% endblock javascripts %}

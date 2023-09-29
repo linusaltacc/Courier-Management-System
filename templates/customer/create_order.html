@@ -1,0 +1,196 @@
+{% extends "/customer/base.html" %}
+
+{% block title %} Create Order {% endblock %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ol@v8.1.0/dist/ol.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.1.0/ol.css">
+<style>
+    img.huechange { filter: hue-rotate(120deg); }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+<main>
+    <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
+        <div class="container">
+            <div class="row justify-content-center form-bg-image" data-background-lg="/static/assets/img/illustrations/bs5-illustrations.svg">
+                <div class="col-12 d-flex align-items-center justify-content-center">
+                    <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                        <div class="text-center text-md-center mb-4 mt-md-0">
+                            <h1 class="mb-0 h3">
+                                Create Order
+                            </h1>
+                            <br />
+                            <p>
+                                Fill in the details below to create a new order.
+                            </p>
+                        </div>
+                        <form method="post" action="" class="mt-4">
+                            <div class="row">
+                                <!-- Left Column for Sender Information -->
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="sender_name" class="form-label">Sender Name</label>
+                                        <input type="text" class="form-control" id="sender_name" name="sender_name" placeholder="Sender Name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="sender_address" class="form-label">Sender Address</label>
+                                        <input type="text" class="form-control" id="sender_address" name="sender_address" placeholder="Sender Address" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="sender_contact" class="form-label">Sender Contact</label>
+                                        <input type="text" class="form-control" id="sender_contact" name="sender_contact" placeholder="Sender Contact" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="package_weight" class="form-label">Package Weight (in kg)</label>
+                                        <input type="text" class="form-control" id="package_weight" name="package_weight" placeholder="Package Weight" min="0" max="100" required>
+                                    </div>
+                                </div>
+                        
+                                <!-- Right Column for Recipient Details -->
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="recipient_name" class="form-label">Recipient Name</label>
+                                        <input type="text" class="form-control" id="recipient_name" name="recipient_name" placeholder="Recipient Name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="recipient_address" class="form-label">Recipient Address</label>
+                                        <input type="text" class="form-control" id="recipient_address" name="recipient_address" placeholder="Recipient Address" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="recipient_contact" class="form-label">Recipient Contact</label>
+                                        <input type="text" class="form-control" id="recipient_contact" name="recipient_contact" placeholder="Recipient Contact" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="pickup_date" class="form-label">Pickup Date</label>
+                                        <input data-datepicker="" type="text" class="form-control" id="pickup_date" name="pickup_date"  placeholder="dd/mm/yyyy" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="delivery_preference" class="form-label">Delivery Preference</label>
+                                    <select class="form-select" id="delivery_preference" name="delivery_preference" required>
+                                        <option value="Express">Express</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="Economy">Economy</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="package_weight" class="form-label">Package Details</label>
+                                    <input type="text" class="form-control" id="package_details" name="package_details" placeholder="Package Details" required>
+                                </div>
+                            </div>
+                        
+                            <div class="mb-3">
+                                <label for="additional_notes" class="form-label">Additional Notes</label>
+                                <textarea class="form-control" id="additional_notes" name="additional_notes" rows="4" placeholder="Additional Notes"></textarea>
+                            </div>
+                            <label class="form-label">Deliver Latitude</label>
+                            <input type="text" id="latitude" name="latitude" placeholder="latitude" readonly>
+                            <label class="form-label">Deliver Longitude</label>
+                            <input type="text" id="longitude" name="longitude" placeholder="longitude" readonly>
+                            <a href="#" class="btn btn-info btn-primary"  data-bs-toggle="modal" data-bs-target="#mapModal">Mark Order Location</a>
+
+                            <div class="d-grid">
+                                <button type="submit" name="login" class="btn btn-gray-800">Order</button>
+                            </div>
+
+                        </form>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<!-- Map Modal -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalLabel">Mark Delivery Location</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="height: 400px;"  class="mb-3"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+
+<script>
+    var datepickers = [].slice.call(document.querySelectorAll('[data-datepicker]'))
+    var datepickersList = datepickers.map(function (el) {
+    return new Datepicker(el, {
+        buttonClass: 'btn'
+    });
+});
+</script>
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([0, 0], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map);
+
+    let marker = null;
+    map.on('click', (event)=> {
+
+        if(marker !== null){
+            map.removeLayer(marker);
+        }
+
+        marker = L.marker([event.latlng.lat , event.latlng.lng]).addTo(map);
+        marker._icon.classList.add("huechange");
+
+        document.getElementById('latitude').value = event.latlng.lat;
+        document.getElementById('longitude').value = event.latlng.lng;
+        
+    })
+    // route is ol.geom.LineString
+var route = new ol.format.Polyline({
+    factor: 1e6
+}).readGeometry(polyline, {
+    dataProjection: 'EPSG:4326',
+    featureProjection: 'EPSG:3857'
+});
+var feature = new ol.Feature(route);
+feature.setStyle(styles.route);
+vectorSource.addFeature(feature);
+    // Function to update the marker's location
+    function updateLocation() {
+        console.log("Updating location..."); // Debugging statement
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+            console.log("Location updated."); // Debugging statement
+        } else { 
+            console.log("Geolocation is not supported by this browser.");
+        }
+        function showPosition(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            // Update the hidden input fields with latitude and longitude values
+            document.getElementById("latitude").value = latitude;
+            document.getElementById("longitude").value = longitude;
+            var newLatLng = L.latLng(position.coords.latitude,position.coords.longitude); // Example coordinates (latitude, longitude)
+            map.setView(newLatLng, 19);
+            L.marker(newLatLng).addTo(map);
+        }
+    }
+    var currentLocationMarker;
+    updateLocation();
+</script>
+{% endblock javascripts %}

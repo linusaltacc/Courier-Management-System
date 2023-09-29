@@ -1,0 +1,189 @@
+{% extends "/customer/base.html" %}
+
+{% block title %} All Orders {% endblock %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+    <!-- Add any CSS styles specific to this page if needed -->
+{% endblock stylesheets %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <h1 class="mt-5 mb-4">All Orders</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Order No</th>
+                        <th>Order ID</th>
+                        <th>Sender Name</th>
+                        <th>Recipient Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through orders and generate rows -->
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ loop.index0 + 1 }}</td>
+                            <td>{{ order_ids[loop.index0] }}</td>
+                            <td>{{ order.sender_name }}</td>
+                            <td>{{ order.recipient_name }}</td>
+                            <td>{{ order.status }}</td>
+                            <script>console.log("{{order.status}}")</script>
+                            <td>
+                                <a href="#" class="btn btn-info btn-primary"  data-bs-toggle="modal" data-bs-target="#viewOrderModal{{ loop.index }}">View</a>
+                                {% if order.status != "Delivered" %}
+                                <a href="#" class="btn btn-info btn-gray-800" id="EditButton{{ loop.index }}" data-bs-toggle="modal" data-bs-target="#editOrderModal{{ loop.index }}">Edit</a>
+                                {% endif %}
+                                {% if order.status == "order ready for pickup" %}
+                                <a href="#" class="btn btn-info btn-danger" id="DeleteButton{{ loop.index }}" data-bs-toggle="modal" data-bs-target="#deleteOrderModal{{ loop.index }}">Delete</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- View and Edit Modals -->
+{% for order in orders %}
+
+    <!-- View Order Modal -->
+    <div class="modal fade" id="viewOrderModal{{ loop.index }}" tabindex="-1" aria-labelledby="viewOrderModal{{ loop.index }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewOrderModal{{ loop.index }}Label">View Order - {{ order.order_id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add content here to display order details -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Sender Details</h4>
+                            <p><strong>Name:</strong> {{ order.sender_name }}</p>
+                            <p><strong>Contact:</strong> {{ order.sender_contact }}</p>
+                            <p><strong>Address:</strong> {{ order.sender_address }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Recipient Details</h4>
+                            <p><strong>Name:</strong> {{ order.recipient_name }}</p>
+                            <p><strong>Contact:</strong> {{ order.recipient_contact }}</p>
+                            <p><strong>Address:</strong> {{ order.recipient_address }}</p>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h4>Order Details</h4>
+                            <p><strong>Pickup Date:</strong> {{ order.pickup_date }}</p>
+                            <p><strong>Package Weight (kg):</strong> {{ order.package_weight }}</p>
+                            <p><strong>Package Details:</strong> {{ order.package_details }}</p>
+                            <p><strong>Additional Notes:</strong> {{ order.additional_notes }}</p>
+                            <p><strong>Delivery Preference:</strong> {{ order.delivery_preference }}</p>
+                            <p><strong>Status:</strong> {{ order.status }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>User Details</h4>
+                            <p><strong>User ID:</strong> {{ order.user_id }}</p>
+                        </div>
+                    </div>
+                    <!-- Include more order details here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Edit Order Modal -->
+<div class="modal fade" id="editOrderModal{{ loop.index }}" tabindex="-1" aria-labelledby="editOrderModal{{ loop.index }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editOrderModal{{ loop.index }}Label">Edit Order - {{ order.order_id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Edit Order Form -->
+                <form method="POST" action="/api/edit_order/{{ order_ids[loop.index0] }}">
+                    <!-- Sender Details -->
+                    <div class="mb-3">
+                        <label for="sender_name" class="form-label">Sender Name</label>
+                        <input type="text" class="form-control" id="sender_name" name="sender_name" value="{{order.sender_name}}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sender_address" class="form-label">Sender Address</label>
+                        <input type="text" class="form-control" id="sender_address" name="sender_address" value="{{ order.sender_address }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sender_contact" class="form-label">Sender Contact</label>
+                        <input type="text" class="form-control" id="sender_contact" name="sender_contact" value="{{ order.sender_contact }}" required>
+                    </div>
+                    <!-- Recipient Details -->
+                    <div class="mb-3">
+                        <label for="recipient_name" class="form-label">Recipient Name</label>
+                        <input type="text" class="form-control" id="recipient_name" name="recipient_name" value="{{ order.recipient_name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient_address" class="form-label">Recipient Address</label>
+                        <input type="text" class="form-control" id="recipient_address" name="recipient_address" value="{{ order.recipient_address }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient_contact" class="form-label">Recipient Contact</label>
+                        <input type="text" class="form-control" id="recipient_contact" name="recipient_contact" value="{{ order.recipient_contact }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="package_weight" class="form-label">Package Weight (in kg)</label>
+                        <input type="text" class="form-control" id="package_weight" name="package_weight" value="{{ order.package_weight }}" min="0" max="100" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="package_weight" class="form-label">Package Details</label>
+                        <input type="text" class="form-control" id="package_details" name="package_details" value="{{ order.package_details }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="additional_notes" class="form-label">Additional Notes</label>
+                        <textarea class="form-control" id="additional_notes" name="additional_notes" rows="4">{{ order.additional_notes }}</textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-gray-800" data-bs-dismiss="modal">Edit Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Delete Order Modal -->
+{% for order in orders %}
+    <div class="modal fade" id="deleteOrderModal{{ loop.index }}" tabindex="-1" aria-labelledby="deleteOrderModal{{ loop.index }}Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteOrderModal{{ loop.index }}Label">Delete Order - {{ order.order_id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this order?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="/api/delete_order/{{ order_ids[loop.index0] }}">
+                        <button type="button" class="btn btn-gray-800" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+{% endfor %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+    <!-- Add any JavaScript specific to this page if needed -->
+{% endblock javascripts %}

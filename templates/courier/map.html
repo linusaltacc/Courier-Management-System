@@ -1,0 +1,436 @@
+{% extends "/courier/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+    integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+    crossorigin=""></script>
+
+<style>
+.map {
+  position: absolute;
+  width: 100%;
+  height: 400px;
+}
+.leaflet-routing-container,
+.leaflet-routing-error {
+width: 300px;
+background-color: white;
+padding-top: 2px;
+transition: all 0.2s ease;
+box-sizing: border-box;
+opacity: 0.75;
+}
+
+.leaflet-control-container .leaflet-routing-container-hide {
+width: 32px;
+height: 32px;
+}
+
+.leaflet-routing-container h2 {
+font-size: 14px;
+}
+
+.leaflet-routing-container h3 {
+font-size: 12px;
+font-weight: normal;
+}
+
+.leaflet-routing-collapsible .leaflet-routing-geocoders {
+margin-top: 20px;
+}
+
+.leaflet-routing-alt,
+.leaflet-routing-geocoders,
+.leaflet-routing-error {
+padding: 6px;
+margin-top: 2px;
+margin-bottom: 6px;
+border-bottom: 1px solid #ccc;
+max-height: 320px;
+overflow-y: auto;
+transition: all 0.2s ease;
+}
+
+.leaflet-control-container .leaflet-routing-container-hide .leaflet-routing-alt,
+.leaflet-control-container
+.leaflet-routing-container-hide
+.leaflet-routing-geocoders {
+display: none;
+}
+
+.leaflet-bar .leaflet-routing-alt:last-child {
+border-bottom: none;
+}
+
+.leaflet-routing-alt-minimized {
+color: #888;
+max-height: 64px;
+overflow: hidden;
+cursor: pointer;
+}
+
+.leaflet-routing-alt table {
+border-collapse: collapse;
+}
+
+.leaflet-routing-alt tr:hover {
+background-color: #eee;
+cursor: pointer;
+}
+
+.leaflet-routing-alt::-webkit-scrollbar {
+width: 8px;
+}
+
+.leaflet-routing-alt::-webkit-scrollbar-track {
+border-radius: 2px;
+background-color: #eee;
+}
+
+.leaflet-routing-alt::-webkit-scrollbar-thumb {
+border-radius: 2px;
+background-color: #888;
+}
+
+.leaflet-routing-icon {
+background-image: url('leaflet.routing.icons.png');
+background-image: url("data:image/svg+xml;utf-8,%3Csvg%20width=%2224%22%20height=%2224%22%20viewBox=%220%200%2024%2024%22%20version=%221.1%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath%20stroke=%22black%22%20stroke-width=%221.5%25%22%20opacity=%220.8%22%20fill=%22red%22%20d=%22M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55%206.84,21.74%2012,23C17.16,21.74%2021,16.55%2021,11V5L12,1Z%22%3E%3C/path%3E%3C/svg%3E");
+-webkit-background-size: 240px 20px;
+background-size: 240px 20px;
+background-repeat: no-repeat;
+margin: 0;
+content: "";
+display: inline-block;
+vertical-align: top;
+width: 20px;
+height: 20px;
+}
+
+.leaflet-routing-icon-continue {
+background-position: 0 0;
+}
+.leaflet-routing-icon-sharp-right {
+background-position: -20px 0;
+}
+.leaflet-routing-icon-turn-right {
+background-position: -40px 0;
+}
+.leaflet-routing-icon-bear-right {
+background-position: -60px 0;
+}
+.leaflet-routing-icon-u-turn {
+background-position: -80px 0;
+}
+.leaflet-routing-icon-sharp-left {
+background-position: -100px 0;
+}
+.leaflet-routing-icon-turn-left {
+background-position: -120px 0;
+}
+.leaflet-routing-icon-bear-left {
+background-position: -140px 0;
+}
+.leaflet-routing-icon-depart {
+background-position: -160px 0;
+}
+.leaflet-routing-icon-enter-roundabout {
+background-position: -180px 0;
+}
+.leaflet-routing-icon-arrive {
+background-position: -200px 0;
+}
+.leaflet-routing-icon-via {
+background-position: -220px 0;
+}
+
+.leaflet-routing-geocoders div {
+padding: 4px 0px 4px 0px;
+}
+
+.leaflet-routing-geocoders input {
+width: 303px;
+width: calc(100% - 4px);
+line-height: 1.67;
+border: 1px solid #ccc;
+}
+
+.leaflet-routing-geocoders button {
+font: bold 18px "Lucida Console", Monaco, monospace;
+border: 1px solid #ccc;
+border-radius: 4px;
+background-color: white;
+margin: 0;
+margin-right: 3px;
+float: right;
+cursor: pointer;
+transition: background-color 0.2s ease;
+}
+
+.leaflet-routing-add-waypoint:after {
+content: "+";
+}
+
+.leaflet-routing-reverse-waypoints:after {
+font-weight: normal;
+content: "\21c5";
+}
+
+.leaflet-routing-geocoders button:hover {
+background-color: #eee;
+}
+
+.leaflet-routing-geocoders input,
+.leaflet-routing-remove-waypoint,
+.leaflet-routing-geocoder {
+position: relative;
+}
+
+.leaflet-routing-geocoder-result {
+font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+position: absolute;
+max-height: 0;
+overflow: hidden;
+transition: all 0.5s ease;
+z-index: 1000; /* Arbitrary, but try to be above "most" things. */
+}
+
+.leaflet-routing-geocoder-result table {
+width: 100%;
+border: 1px solid #ccc;
+border-radius: 0 0 4px 4px;
+background-color: white;
+cursor: pointer;
+}
+
+.leaflet-routing-geocoder-result-open {
+max-height: 800px;
+}
+
+.leaflet-routing-geocoder-selected,
+.leaflet-routing-geocoder-result tr:hover {
+background-color: #eee;
+}
+
+.leaflet-routing-geocoder-no-results {
+font-style: italic;
+color: #888;
+}
+
+.leaflet-routing-remove-waypoint {
+background-color: transparent;
+display: inline-block;
+vertical-align: middle;
+cursor: pointer;
+}
+
+.leaflet-routing-remove-waypoint:after {
+position: absolute;
+display: block;
+width: 15px;
+height: 1px;
+z-index: 1;
+right: 1px;
+top: 4px;
+bottom: 0;
+margin: auto;
+padding: 2px;
+font-size: 18px;
+font-weight: bold;
+content: "\00d7";
+text-align: center;
+cursor: pointer;
+color: #ccc;
+background: white;
+padding-bottom: 16px;
+margin-top: -16px;
+padding-right: 4px;
+line-height: 1;
+}
+
+.leaflet-routing-remove-waypoint:hover {
+color: black;
+}
+
+.leaflet-routing-instruction-distance {
+width: 48px;
+}
+
+.leaflet-routing-collapse-btn {
+position: absolute;
+top: 0;
+right: 6px;
+font-size: 24px;
+color: #ccc;
+font-weight: bold;
+}
+
+.leaflet-routing-collapse-btn:after {
+content: "\00d7";
+}
+
+.leaflet-routing-container-hide .leaflet-routing-collapse-btn {
+position: relative;
+left: 4px;
+top: 4px;
+display: block;
+width: 26px;
+height: 23px;
+background-image: url("routing-icon.png");
+}
+
+.leaflet-routing-container-hide .leaflet-routing-collapse-btn:after {
+content: none;
+}
+
+.leaflet-top .leaflet-routing-container.leaflet-routing-container-hide {
+margin-top: 10px !important;
+}
+.leaflet-right .leaflet-routing-container.leaflet-routing-container-hide {
+margin-right: 10px !important;
+}
+.leaflet-bottom .leaflet-routing-container.leaflet-routing-container-hide {
+margin-bottom: 10px !important;
+}
+.leaflet-left .leaflet-routing-container.leaflet-routing-container-hide {
+margin-left: 10px !important;
+}
+
+@media only screen and (max-width: 640px) {
+.leaflet-routing-container {
+margin: 0 !important;
+padding: 0 !important;
+width: 100%;
+height: 100%;
+}
+}
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<main>
+    <div class="mb-3">
+        <label for="order_id" class="form-label">Order ID</label>
+        <select class="form-select" id="order_id" name="order_id" onchange="location = this.value;" required>
+            <option value="">Select Order ID</option>
+            {% for order in order_ids %}
+            {% if order.status != "Delivered" %}
+                <option value="/dashboard/map/{{ order }}">{{ order }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+        <div class="mb-3">
+            <div id="map" class="map" style="height: 400px; width: 85%;"></div>
+    </div>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js'></script>
+  
+  <script>
+
+        const cntr_loc = L.latLng(0, 0);
+        const orig_loc = L.latLng(11.203234703023082,77.02740359576832);
+        const dest_loc = L.latLng({{longitude}},{{latitude}});
+
+        var zoom = 15;
+
+        var map = L.map("map", {
+        preferCanvas: false
+        }).setView(cntr_loc, zoom);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                }).addTo(map);
+
+        const checkmk = `<svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg"><path stroke="black" stroke-width="1.5%" opacity="0.8" fill="brown" d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z"></path></svg>`;
+
+        function checkmk_mk(color) {
+        // assume checkmk has `brown` only 1 place
+        return checkmk.replace(/brown/g, color);
+        }
+
+        const svgpin_Url = encodeURI("data:image/svg+xml;utf-8," + checkmk_mk("red"));
+        const svgpin_Url2 = encodeURI(
+        "data:image/svg+xml;utf-8," + checkmk_mk("green")
+        );
+        const svgpin_Url3 = encodeURI(
+        "data:image/svg+xml;utf-8," + checkmk_mk("black")
+        );
+
+        const svgpin_Icon = L.icon({
+        iconUrl: svgpin_Url,
+        iconSize: [24, 24],
+        iconAnchor: [12, 24],
+        popupAnchor: [0, -22]
+        });
+        const svgpin_Icon2 = L.icon({
+        iconUrl: svgpin_Url2,
+        iconSize: [24, 24],
+        iconAnchor: [12, 24],
+        popupAnchor: [0, -22]
+        });
+        const svgpin_Icon3 = L.icon({
+        iconUrl: svgpin_Url3,
+        iconSize: [24, 24],
+        iconAnchor: [12, 24],
+        popupAnchor: [0, -22]
+        });
+
+
+        /* Start routing control  */
+        function begin_routing() {
+        L.Routing.control({
+            waypoints: [
+            orig_loc,
+            dest_loc
+            //L.latLng(14.1688, 100.2918),
+            //L.latLng(13.7042, 100.6032)
+            ],
+            routeWhileDragging: true,
+            routeDragInterval: 500,
+            collapsible: true, // hide/show panel routing
+            reverseWaypoints: false,
+            showAlternatives: false,
+            createMarker: function(i, wp, nWps) {
+            switch (i) {
+                case 0:
+                return L.marker(wp.latLng, {
+                    icon: svgpin_Icon,
+                    draggable: true
+                }).bindPopup("<b>" + "Origin" + "</b>");
+                case nWps - 1:
+                return L.marker(wp.latLng, {
+                    icon: svgpin_Icon2,
+                    draggable: true
+                }).bindPopup("<b>" + "Destination" + "</b>");
+                default:
+                return L.marker(wp.latLng, {
+                    icon: svgpin_Icon3,
+                    draggable: true
+                }).bindPopup("<b>" + "Waypoint" + "</b>");
+            }
+            }
+        }).addTo(map);
+        }
+
+        begin_routing();
+
+        /* end-of-script */
+  </script>
+
+</main>
+
+{% endblock content %}
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+{% endblock javascripts %}
