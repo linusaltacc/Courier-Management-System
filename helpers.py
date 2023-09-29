@@ -2,14 +2,56 @@ from models import db
 import bcrypt
 from datetime import datetime
 from firebase_admin.firestore import FieldFilter
-
-
+import random
+import smtplib
+import os
+from dotenv import load_dotenv
+load_dotenv()
 def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'),bcrypt.gensalt(8))
 
 def check_password(password, hashed_password):
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
     
+
+def generate_otp(length=6):
+    """Generate a random OTP of the specified length."""
+    digits = "0123456789"
+    otp = ""
+    for i in range(length):
+        otp += random.choice(digits)
+    return otp
+
+def send_mail(username, email, subject, message):
+    content = """
+        Hello {username}!
+        {message}""".format(username=username, message=message)
+    mail=smtplib.SMTP('smtp.gmail.com', 587)
+    mail.ehlo()
+    mail.starttls()
+    sender=os.getenv('email')
+    recipient=email
+    mail.login(sender,os.getenv('password'))
+    header='To:'+recipient+'\n'+'From:' +sender+'\n'+'subject:'+subject+'\n'
+    content=header+content
+    mail.sendmail(sender, recipient, content)
+    mail.close()
+
+def send_otp(username, role):
+    otp = generate_otp()
+    user_ref = db.collection(role).document(username)
+    email = user_ref.get().to_dict()['email']
+    send_mail(username=username, email=email, subject="OTP for CMS", message="OTP: "+otp)
+    user_ref.update({"OTP":otp})
+    return True
+
+def verify_otp(username, role, otp):
+    print(username, role, otp)
+    user_ref = db.collection(role).document(username).get().to_dict()['OTP']
+    if user_ref == otp:
+        return True
+    else:
+        return False
 
 def create_courier( username, email, password, notifications={}):
     courier_ref = db.collection("couriers").document(username)
@@ -78,6 +120,18 @@ def create_customer_order(sender_name, sender_contact, sender_address, recipient
     update_time, order_ref = db.collection("orders").add(order_data)
     return order_ref.id
 
+def update_customer_password(username, password):
+    user_ref = db.collection("customers").document(username)
+    user_ref.update({"password": hash_password(password)})
+
+def update_courier_password(username, password):
+    user_ref = db.collection("couriers").document(username)
+    user_ref.update({"password": hash_password(password)})
+
+def update_admin_password(username, password):
+    user_ref = db.collection("admins").document(username)
+    user_ref.update({"password": hash_password(password)})
+
 # Admin Dashboard
 def get_admin_dashboard_details():
         db_couriers = db.collection('couriers')
@@ -97,6 +151,16 @@ def get_courier_dashboard_details(courier_id):
         no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
         no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
         return [no_orders_delivered, no_orders_assigned, no_orders_in_transit]
+
+def get_customer_dashboard_details(customer_id):
+        db_orders = db.collection('orders').where(filter=FieldFilter('user_id', '==', customer_id))
+        no_orders = len(db_orders.get())
+        no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
+        no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
+        notifications =  db.collection('customers').document(customer_id).get().to_dict().get('notifications')
+        new_notifications = sorted(notifications)[len(notifications)-1]
+        return [no_orders_delivered, no_orders, no_orders_in_transit, notifications[new_notifications]['message']]
+
 # Get all couriers
 def get_all_couriers():
     couriers_ref = db.collection("couriers").stream()

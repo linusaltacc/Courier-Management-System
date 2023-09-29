@@ -11,7 +11,7 @@ app.secret_key = 'your_secret_key'
 # Home Page - Display a list of users
 @app.route('/')
 def index():
-    return render_template_string('index.html')
+    return render_template('/home/index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -48,6 +48,47 @@ def register():
         return render_template_string('success')
     return render_template('register.html')
 
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        username = request.form['username']
+        role = request.form['role']
+        if db.collection(role).document(username).get().exists:
+            user = db.collection(role).document(username).get().to_dict()
+            if user['email']:
+                send_otp(username, role)
+                return render_template('forgot_password.html', username=username, role=role, email=user['email'][3:])
+            return render_template_string('Invalid email. Please try again.')
+        return render_template_string('Invalid role. Please try again.')
+    else:
+        return render_template('forgot_password.html')
+
+@app.route('/verify_otp', methods=['POST'])
+def verify_otp_page():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        role = request.form.get('role')
+        otp = request.form.get('otp')
+        if verify_otp(username, role, otp):
+            return render_template('reset_password.html', username=username, role=role)
+        return render_template_string('Invalid OTP. Please try again.')
+
+@app.route('/reset_password', methods=['POST'])
+def reset_password():
+    username = request.form['username']
+    role = request.form['role']
+    password = request.form['password']
+    confirm_password = request.form['confirm_password']
+    if password == confirm_password:
+        if role == 'customers':
+            update_customer_password(username, password)
+        elif role == 'couriers':
+            update_courier_password(username, password)
+        elif role == 'admins':
+            update_admin_password(username, password)
+        return redirect(url_for('login'))
+    return render_template_string('Passwords do not match. Please try again.')
+
 # Dashboard
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
@@ -58,7 +99,8 @@ def dashboard():
         no_orders_delivered, no_orders_assigned, no_orders_in_transit = get_courier_dashboard_details(g.courier)
         return render_template('/courier/dashboard.html', user=g.courier, segment='dashboard', no_orders_delivered=no_orders_delivered, no_orders_assigned=no_orders_assigned, no_orders_in_transit=no_orders_in_transit)
     elif g.customer:
-        return render_template('/customer/dashboard.html', user=g.customer, segment='dashboard')
+        no_orders_delivered, no_orders, no_orders_in_transit, new_notification = get_customer_dashboard_details(g.customer)
+        return render_template('/customer/dashboard.html', user=g.customer, segment='dashboard', no_orders_delivered=no_orders_delivered, no_orders=no_orders, no_orders_in_transit=no_orders_in_transit, new_notification=new_notification)
     return redirect(url_for('login'))
 
 # notifications for everyone
@@ -124,7 +166,7 @@ def all_orders():
     
 @app.route('/api/edit_order/<order_id>', methods=['POST'])
 def edit_order(order_id):
-    if g.customer:
+    if g.customer or g.admin:
         if request.method == 'POST':
             sender_name = request.form['sender_name']
             sender_address = request.form['sender_address']

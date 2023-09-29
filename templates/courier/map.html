@@ -330,6 +330,16 @@ height: 100%;
         <div class="mb-3">
             <div id="map" class="map" style="height: 400px; width: 85%;"></div>
     </div>
+</div>
+</main>
+<div class="mb-3">
+
+    <label for="total_distance">Total distance:</label>
+<input type="text" id="total_distance" readonly>
+<label for="estimated_time">Total distance:</label>
+<input type="text" id="estimated_time" readonly>
+</div>
+    
 <!-- partial -->
   <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js'></script>
   
@@ -386,7 +396,7 @@ height: 100%;
 
         /* Start routing control  */
         function begin_routing() {
-        L.Routing.control({
+            var routeControl = L.Routing.control({
             waypoints: [
             orig_loc,
             dest_loc
@@ -418,10 +428,19 @@ height: 100%;
             }
             }
         }).addTo(map);
+        routeControl.on('routesfound', function(e) {
+        var routes = e.routes;
+        var summary = routes[0].summary;
+        var total_distance = document.getElementById("total_distance");
+        total_distance.value = summary.totalDistance / 1000
+        var estimated_time = document.getElementById("estimated_time");
+        estimated_time.value = summary.totalTime / 60
+        console.log("total_distance", summary.totalDistance / 1000);
+        });
         }
 
         begin_routing();
-
+        
         /* end-of-script */
   </script>
 

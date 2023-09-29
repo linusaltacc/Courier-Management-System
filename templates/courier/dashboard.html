@@ -10,11 +10,35 @@
 https://cdn.jsdelivr.net/npm/svgmap@2.10.1/dist/svgMap.min.js
 "></script>
 <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 
 {% endblock stylesheets %}
 
 {% block content %}
+<!-- Modal Content -->
+<div class="modal fade in" id="modal-notification" data-toggle="modal-notification" tabindex="-1" role="dialog" aria-labelledby="modal-notification" aria-hidden="true">
+    <div class="modal-dialog modal-info modal-dialog-centered" role="document" >
+        <div class="modal-content bg-gradient-secondary" style="background-color: #f0bc74;">
+            <div class="modal-header">
+                <p class="modal-title fw-bolder" id="modal-title-notification">Notification!</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="py-3 text-center">
+                    <span class="modal-icon display-1-lg"><span class="far fa-envelope-open"></span></span>
+                    <h2 class="h4 modal-title my-3">Update!</h2>
+                    <p>You have been assigned to a new delivery</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-white" onclick="location.href = '/dashboard/assigned_deliveries';">View Order</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Add more code for other statistics here -->
 <div class="row">
 
@@ -330,4 +354,6 @@ function drawVisualization() {
     };
 
 </script>
+<script>$('#modal-notification').modal('toggle')</script>
+
 {% endblock javascripts %}

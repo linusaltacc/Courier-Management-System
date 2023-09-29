@@ -21,7 +21,7 @@
                 <select class="form-select" id="order_id" name="order_id" required>
                     {% for order in order_ids %}
                     {% if order.status != "Delivered" %}
-                        <option value="{{ id }}">{{ order.id }}</option>
+                        <option value="{{ order.id }}">{{ order.id }}</option>
                     {% endif %}
                     {% endfor %}
                 </select>
