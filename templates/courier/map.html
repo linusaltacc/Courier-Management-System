@@ -316,7 +316,7 @@ height: 100%;
 {% block content %}
 
 
-<main>
+<main onload="updateLocation()">
     <div class="mb-3">
         <label for="order_id" class="form-label">Order ID</label>
         <select class="form-select" id="order_id" name="order_id" onchange="location = this.value;" required>
@@ -327,28 +327,47 @@ height: 100%;
             {% endif %}
             {% endfor %}
         </select>
+
+<div class="mb-3">
+    <label for="total_distance">Total distance:</label>
+<input type="text" id="total_distance" readonly>kms
+<label for="estimated_time">Total distance:</label>
+<input type="text" id="estimated_time" readonly>mins
+</div>
         <div class="mb-3">
             <div id="map" class="map" style="height: 400px; width: 85%;"></div>
     </div>
-</div>
 </main>
-<div class="mb-3">
+  
 
-    <label for="total_distance">Total distance:</label>
-<input type="text" id="total_distance" readonly>
-<label for="estimated_time">Total distance:</label>
-<input type="text" id="estimated_time" readonly>
-</div>
-    
-<!-- partial -->
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js'></script>
+{% endblock content %}
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js'></script>
   
   <script>
 
+    //   updateLocation();
+    window.onload = function updateLocation() {
+        console.log("Updating location..."); // Debugging statement
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+            console.log("Location updated."); // Debugging statement
+        } else { 
+            console.log("Geolocation is not supported by this browser.");
+            make_map(L.latLng(11.203234703023082,77.02740359576832)); // sample location for testing
+        }
+        function showPosition(position) {
+            const orig_loc = L.latLng(position.coords.latitude,position.coords.longitude);
+            console.log("orig_loc");
+            make_map(orig_loc);
+        }
+    }
+    function make_map(orig_loc) {
         const cntr_loc = L.latLng(0, 0);
-        const orig_loc = L.latLng(11.203234703023082,77.02740359576832);
         const dest_loc = L.latLng({{longitude}},{{latitude}});
-
         var zoom = 15;
 
         var map = L.map("map", {
@@ -431,6 +450,7 @@ height: 100%;
         routeControl.on('routesfound', function(e) {
         var routes = e.routes;
         var summary = routes[0].summary;
+        console.log(routes)
         var total_distance = document.getElementById("total_distance");
         total_distance.value = summary.totalDistance / 1000
         var estimated_time = document.getElementById("estimated_time");
@@ -440,16 +460,7 @@ height: 100%;
         }
 
         begin_routing();
-        
+    };
         /* end-of-script */
   </script>
-
-</main>
-
-{% endblock content %}
-
-
-<!-- Specific Page JS goes HERE  -->
-{% block javascripts %}
-
 {% endblock javascripts %}

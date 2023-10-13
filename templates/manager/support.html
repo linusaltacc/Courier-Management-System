@@ -1,0 +1,254 @@
+{% extends "manager/base.html" %}
+
+{% block title %} All Orders {% endblock %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+    <!-- Add any CSS styles specific to this page if needed -->
+    <link rel="stylesheet" href="http://unpkg.com/leaflet@latest/dist/leaflet.css" />
+
+<style>
+    .chat-box {
+        height: 300px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+    }
+    
+    .chat-box p {
+        margin: 0;
+        padding: 5px;
+        border-radius: 5px;
+    }
+    
+    .chat-box p strong {
+        display: block;
+    }
+    
+    .user-message {
+        background-color: #d9e5f9;
+        margin-bottom: 5px;
+    }
+    
+    .manager-message {
+        background-color: #abeef0;
+        margin-bottom: 5px;
+    }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <h1 class="mt-5 mb-4">Tickets Raised</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Sender Name</th>
+                        <th>Recipient Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through orders and generate rows -->
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order_ids[loop.index0] }}</td>
+                            <td>{{ order.sender_name }}</td>
+                            <td>{{ order.recipient_name }}</td>
+                            <td>{{ order.status }}</td>
+                            <td>
+                                <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewOrderModal{{ loop.index }}">View</a>
+                                <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#trackOrderModal{{ loop.index }}">Track</a>
+                                <a href="#" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#editOrderModal{{ loop.index }}">Respond</a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- View and Edit Modals -->
+{% for order in orders %}
+    <!-- View Order Modal -->
+     <div class="modal fade" id="viewOrderModal{{ loop.index }}" tabindex="-1" aria-labelledby="viewOrderModal{{ loop.index }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewOrderModal{{ loop.index }}Label">View Order - {{ order.order_id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add content here to display order details -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Sender Details</h4>
+                            <p><strong>Name:</strong> {{ order.sender_name }}</p>
+                            <p><strong>Contact:</strong> {{ order.sender_contact }}</p>
+                            <p><strong>Address:</strong> {{ order.sender_address }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Recipient Details</h4>
+                            <p><strong>Name:</strong> {{ order.recipient_name }}</p>
+                            <p><strong>Contact:</strong> {{ order.recipient_contact }}</p>
+                            <p><strong>Address:</strong> {{ order.recipient_address }}</p>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h4>Order Details</h4>
+                            <p><strong>Pickup Date:</strong> {{ order.pickup_date }}</p>
+                            <p><strong>Package Weight (kg):</strong> {{ order.package_weight }}</p>
+                            <p><strong>Package Details:</strong> {{ order.package_details }}</p>
+                            <p><strong>Additional Notes:</strong> {{ order.additional_notes }}</p>
+                            <p><strong>Delivery Preference:</strong> {{ order.delivery_preference }}</p>
+                            <p><strong>Status:</strong> {{ order.status }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>User Details</h4>
+                            <p><strong>User ID:</strong> {{ order.user_id }}</p>
+                        </div>
+                    </div>
+                    <!-- Include more order details here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Edit Order Modal -->
+<div class="modal fade" id="editOrderModal{{ loop.index }}" tabindex="-1" aria-labelledby="editOrderModal{{ loop.index }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editOrderModal{{ loop.index }}Label">Edit Order - {{ order_ids[loop.index0] }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Edit Order Form -->
+                <script>
+
+                    function getSupportLogs() {
+
+                            var support_logs = {{ order.support | tojson }};
+                            var support_log_html = "";
+                            var support_logs_array = [];
+                    
+                            for (var time in support_logs) {
+                                var log = support_logs[time];
+                                log['timestamp'] = time;
+                                support_logs_array.push(log);
+                            }
+                    
+                            support_logs_array.sort(function(a, b) {
+                                var timestampA = new Date(a.timestamp.replace(/,/g, '')).getTime();
+                                var timestampB = new Date(b.timestamp.replace(/,/g, '')).getTime();
+                                return timestampA - timestampB;
+                            });
+                            var support_logs  = support_logs_array.reduce(function(map, obj) {
+                                map[obj.timestamp] = obj;
+                                return map;
+                            }, {});
+                            if (support_logs == null) {
+                                support_log_html = "<p>No logs found</p>";
+                            } else {
+                                for (var time in support_logs) {
+                                    var log = support_logs[time];
+                                    if ('support_description' in log) {
+                                        // Log entry is from a user
+                                        support_log_html += "<p class='user-message'><strong>User (" + time + ")</strong>: " + 
+                                            log.support_description + "</p>";
+                                    } else if ('support' in log) {
+                                        // Log entry is from a manager
+                                        support_log_html += "<p class='manager-message'><strong>Manager (" + time + ")</strong>: " + 
+                                            log.support + "</p>";
+                                    }
+                                }
+                            }
+                    
+                            document.getElementById("support_logs").innerHTML = support_log_html;
+                        }
+                        
+                        window.onload = getSupportLogs;
+                    
+                    </script>
+                <div id="support_logs" class="chat-box"></div>
+                <form method="POST" action="/api/update_ticket">
+                    <!-- Sender Details -->
+                    <input type="text" name="order_id" value="{{order_ids[loop.index0]}}" hidden>
+                    <div class="mb-3">
+                        <label for="support" class="form-label">Support</label>
+                        <textarea class="form-control" id="support" name="support" rows="4"></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-gray-800" data-bs-dismiss="modal">Respond Ticket</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View and track Modals -->
+<div class="modal fade" id="trackOrderModal{{ loop.index }}" tabindex="-1" aria-labelledby="trackOrderModal{{ loop.index }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Tracking History</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+            <!-- Map -->
+            <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+            <!-- <div id="map" class="map-container" style="width: 100%; height: 400px;" class="mb-3"> -->
+            <iframe class="map-container"  src="//maps.google.com/maps?q={{order.latitude}},{{order.longitude}}&z=15&output=embed" style="width: 100%; height: 400px;"></iframe>
+            </div>
+                <!-- Tracking History -->
+                <div class="mt-1">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for timestamp, tracking_entry in order.tracking_history.items() %}
+                                <tr>
+                                    <td>{{ timestamp }}</td>
+                                    <td>{{ tracking_entry.location }}</td>
+                                    <td>{{ tracking_entry.status }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endfor %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+
+{% endblock javascripts %}

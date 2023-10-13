@@ -3,12 +3,19 @@
 {% block title %} Sign UP {% endblock %} 
 
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js'></script>
+<script src='https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js'></script>
+<!-- <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css'> -->
+
+
+{% endblock stylesheets %}
 
 {% block content %}
 
     <main>
-        <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
+        <section class="vh-lg-80 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
             <div class="container">
                 <p class="text-center">
 
@@ -20,43 +27,82 @@
                                 <h1 class="mb-0 h3">
                                     Sign Up
                                 </h1>
-                                <br />
+                                <br/>
                             </div>
-                            <form method="post" action="/register" class="mt-4">
-                                
-
+                            <form method="post" id="registerForm" class="needs-validation  mb-5 border-top" novalidate action="#" method="#" action="/register" onsubmit="return validation()" class="mt-4">
                                 <div class="form-group mb-4">
-                                    <label for="email">Username</label>
+                                    <label for="username">Username</label>
                                     <div class="input-group">
                                         <span class="input-group-text" id="basic-addon1">
                                             <span class="fas fa-user-circle"></span>
                                         </span>
-                                        <input type="username" name="username">
-                                    </div>  
+                                        <input type="text" class="form-control" id="username" name="username" onchange="validateUsername();" required>
+                                        <div class="invalid-feedback" id="usernameError">Username is required.</div>
+                                    </div>
                                 </div>
+                                
                                 <div class="form-group mb-4">
                                     <label for="email">Email</label>
                                     <div class="input-group">
                                         <span class="input-group-text" id="basic-addon1">
-                                            <span class="fas fa-user-circle"></span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="16" height="16"  viewBox="0 0 256 256" xml:space="preserve">
+
+
+                                                <defs>
+                                                </defs>
+                                                <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)" >
+                                                    <path d="M 80.89 78.772 H 9.11 c -5.023 0 -9.11 -4.087 -9.11 -9.11 V 20.338 c 0 -5.023 4.087 -9.11 9.11 -9.11 h 71.78 c 5.023 0 9.11 4.087 9.11 9.11 v 49.324 C 90 74.686 85.913 78.772 80.89 78.772 z M 9.11 17.228 c -1.715 0 -3.11 1.396 -3.11 3.11 v 49.324 c 0 1.715 1.395 3.11 3.11 3.11 h 71.78 c 1.715 0 3.11 -1.396 3.11 -3.11 V 20.338 c 0 -1.715 -1.396 -3.11 -3.11 -3.11 H 9.11 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                                    <path d="M 45 55.427 c -5.408 0 -10.599 -2.292 -14.242 -6.288 L 2.493 18.125 l 4.435 -4.042 l 28.265 31.013 c 2.545 2.792 6.028 4.331 9.807 4.331 c 3.779 0 7.262 -1.538 9.808 -4.331 l 28.266 -31.013 l 4.434 4.042 L 59.241 49.138 C 55.599 53.135 50.408 55.427 45 55.427 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                                    <rect x="-0.96" y="57.16" rx="0" ry="0" width="38.98" height="6" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(0.7053 -0.7089 0.7089 0.7053 -37.1881 30.8639) "/>
+                                                    <rect x="68.47" y="40.67" rx="0" ry="0" width="6" height="38.98" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(0.709 -0.7053 0.7053 0.709 -21.628 67.9146) "/>
+                                                </g>
+                                                </svg>
                                         </span>
-                                        <input type="email" name="email">
-                                    </div>  
-                                </div>
-                                <!-- End of Form -->
-                                <div class="form-group">
-                                    <!-- Form -->
-                                    <div class="form-group mb-4">
-                                        <label for="password">Your Password</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text" id="basic-addon2">
-                                                <span class="fas fa-unlock-alt"></span>
-                                            </span>
-                                            <input type="password" name="password" >
-                                        </div>  
+                                        <input type="email" class="form-control" id="email" name="email" onchange="validateEmail()" required pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}">
+                                        <div class="invalid-feedback">Please enter a valid email address.</div>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col">
+                                        <label for="validationPassword">Password</label>
+                                        <div  class="progress" style="height: 5px;">
+                                            <div id="progressbar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 10%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+      
+                                            </div></div>
+                                          <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="16" height="16" viewBox="0 0 256 256" xml:space="preserve">
+        
+                                                    <defs>
+                                                    </defs>
+                                                    <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)" >
+                                                        <path d="M 40.167 49.204 c -13.565 0 -24.602 -11.037 -24.602 -24.602 S 26.601 0 40.167 0 c 13.566 0 24.602 11.037 24.602 24.602 S 53.732 49.204 40.167 49.204 z M 40.167 6 c -10.257 0 -18.602 8.345 -18.602 18.602 s 8.345 18.602 18.602 18.602 s 18.602 -8.345 18.602 -18.602 S 50.424 6 40.167 6 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                                        <path d="M 46.435 90 H 9.092 c -1.657 0 -3 -1.343 -3 -3 v -9.722 c 0 -18.789 15.286 -34.074 34.074 -34.074 c 4.781 0 9.406 0.971 13.747 2.888 c 1.516 0.669 2.202 2.439 1.532 3.956 c -0.669 1.515 -2.437 2.201 -3.956 1.532 c -3.571 -1.576 -7.381 -2.376 -11.323 -2.376 c -15.48 0 -28.074 12.594 -28.074 28.074 V 84 h 34.342 c 1.657 0 3 1.343 3 3 S 48.092 90 46.435 90 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                                        <path d="M 76.678 67.535 c -1.657 0 -3 -1.343 -3 -3 v -6.199 c 0 -2.907 -2.365 -5.272 -5.271 -5.272 h -1.482 c -2.906 0 -5.271 2.365 -5.271 5.272 v 6.199 c 0 1.657 -1.343 3 -3 3 s -3 -1.343 -3 -3 v -6.199 c 0 -6.216 5.057 -11.272 11.271 -11.272 h 1.482 c 6.215 0 11.271 5.057 11.271 11.272 v 6.199 C 79.678 66.192 78.335 67.535 76.678 67.535 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                                        <path d="M 79.656 64.535 H 55.675 c -1.668 0 -3.021 1.352 -3.021 3.021 v 19.423 c 0 1.668 1.352 3.021 3.021 3.021 h 23.981 c 1.668 0 3.021 -1.352 3.021 -3.021 V 67.556 C 82.676 65.888 81.324 64.535 79.656 64.535 z M 70.665 78.581 c 0 1.657 -1.343 3 -3 3 s -3 -1.343 -3 -3 v -1.809 c 0 -1.657 1.343 -3 3 -3 s 3 1.343 3 3 V 78.581 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                                    </g>
+                                                    </svg>   
+                                            </span>
+                                            </span>
+                                          <input type="password" class="form-control" id="validationPassword" minlength="8" name="password" placeholder="Password" value="" required>
+                                          <small id="passwordHelpBlock" class="form-text text-muted">
+                                            Your password must be minimum 8 characters long,  must contain special characters "!@#$%&*_?", numbers, lower and upper letters only.
+                                </small>
+                        
+                                        <div id="feedbackin" class="valid-feedback">
+                                            Strong Password!
+                                        </div>
+                                        <div id="feedbackirn" class="invalid-feedback">
+                                            Atleast 8 characters,
+                                            Number, special character 
+                                            Caplital Letter and Small letters
+                                        </div>                    
+                                        </div>  
+                                        </div>
+                                        
+                                                  
                                     <div class="form-group ">
-                                        <label class="my-1 me-2" for="country">Role</label>
+                                        <label class="my-1 me-2" for="role">Role</label>
                                         <div class="input-group">
                                             <span class="input-group-text" id="basic-addon1">
                                                 <span class="fas fa-user-circle"></span>
@@ -64,12 +110,53 @@
                                             <select class="form-select" name="role" id="role">
                                                 <option value="customer">Customer</option>
                                                 <option value="courier">Courier</option>
+                                                <option value="manager">Manager</option>
                                             </select>
 
                                         </div>  
 
                                     </div>
                                     <br>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-4">
+                                                    <label for="country">Country</label>
+                                                    <select id="country" name="country" class='form-control' onchange="validateCountry();">
+                                                        <option value="">-- Country --</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-4">
+                                                    <label for="state">State/Province</label>
+                                                    <select id="region" name="state" class='form-control' onchange="validateState();">
+                                                        <option value="">-- State --</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <label for="city">City</label>
+                                        <select id="city" name="city" class='form-control' onchange="validateCity();">
+                                            <option value="">-- City --</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <label for="streetAddress">Street Address</label>
+                                        <input type="text" class="form-control" id="streetAddress" name="streetAddress" onchange="validateStreetAddress();" required>
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <label for="postalCode">Postal Code</label>
+                                        <input type="text" class="form-control" id="postalCode" name="postalCode" onchange="validatePostalCode();" maxlength="6" required>
+                                        <div class="invalid-feedback" id="postalCodeError">Postal Code is Required.</div>
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <label for="phone">Phone Number</label>
+                                        <input type="numeric" class="form-control" id="phone" name="phone" oninput="validatePhone();" maxlength="10" required>
+                                        <div class="invalid-feedback" id="phoneError">Phone Number is Required.</div>
+                                    </div>
                                     <!-- End of Form -->
                                     <div class="mb-4">
                                         <div class="form-check">
@@ -81,26 +168,9 @@
                                     </div>
                                 </div>
                                 <div class="d-grid">
-                                    <button type="submit" name="register" class="btn btn-gray-800">Sign UP</button>
+                                    <button type="submit" name="submit" onsubmit="validation();" class="btn btn-gray-800">Sign UP</button>
                                 </div>
                             </form>
-                            <br />
-                            <!--
-                            <div class="mt-3 mb-4 text-center">
-                                <span class="fw-normal">or login with</span>
-                            </div>
-                            <div class="d-flex justify-content-center my-4">
-                                <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2" aria-label="facebook button" title="facebook button">
-                                    <svg class="icon icon-xxs" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook-f" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path></svg>
-                                </a>
-                                <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2" aria-label="twitter button" title="twitter button">
-                                    <svg class="icon icon-xxs" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="twitter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
-                                </a>
-                                <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500" aria-label="github button" title="github button">
-                                    <svg class="icon icon-xxs" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="github" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg>
-                                </a>
-                            </div>-->
-
                             <div class="d-flex justify-content-center align-items-center mt-4">
                                 <span class="fw-normal">
                                     Already have an account? 
@@ -117,4 +187,557 @@
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<!-- Add this script to the end of your HTML body -->
+<script>
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                // making sure password enters the right characters
+                form.elements.validationPassword.addEventListener('keypress', function(event){
+                    // console.log("keypress");
+                    // console.log("event.which: " + event.which);
+                    var checkx = true;
+                    var chr = String.fromCharCode(event.which);
+                    // console.log("char: " + chr);
+
+                    var matchedCase = new Array();
+                    matchedCase.push("[!@#$%&*_?]"); // Special Character
+                    matchedCase.push("[A-Z]");      // Uppercase Alphabets
+                    matchedCase.push("[0-9]");      // Numbers
+                    matchedCase.push("[a-z]");
+
+                    for (var i = 0; i < matchedCase.length; i++) {
+                        if (new RegExp(matchedCase[i]).test(chr)) {
+                            // console.log("checkx: is true");                    
+                            checkx = false;
+                        }
+                    } 
+
+                    if(form.elements.validationPassword.value.length >= 50)
+                        checkx = true;
+
+                    if ( checkx ) {
+                        event.preventDefault();
+                        event.stopPropagation();      
+                    }
+
+                });
+
+                // Validate Password to have more than 8 Characters and A capital Letter, small letter, number, and special character
+                // Create an array and push all possible values that you want in the password
+                var matchedCase = new Array();
+                matchedCase.push("[$@$$!%*#?&]"); // Special Character
+                matchedCase.push("[A-Z]");      // Uppercase Alphabets
+                matchedCase.push("[0-9]");      // Numbers
+                matchedCase.push("[a-z]");     // Lowercase Alphabets
+
+                form.elements.validationPassword.addEventListener('keyup', function(){
+
+                    var messageCase = new Array();
+                    messageCase.push(" Special Character"); // Special Character
+                    messageCase.push(" Upper Case");      // Uppercase Alphabets
+                    messageCase.push(" Numbers");      // Numbers
+                    messageCase.push(" Lower Case");     // Lowercase Alphabets
+
+                    var ctr = 0;
+                    var rti = "";
+                    for (var i = 0; i < matchedCase.length; i++) {
+                        if (new RegExp(matchedCase[i]).test(form.elements.validationPassword.value)) {
+                            if(i == 0) messageCase.splice(messageCase.indexOf(" Special Character"), 1);
+                            if(i == 1) messageCase.splice(messageCase.indexOf(" Upper Case"), 1);
+                            if(i == 2) messageCase.splice(messageCase.indexOf(" Numbers"), 1);
+                            if(i == 3) messageCase.splice(messageCase.indexOf(" Lower Case"), 1);
+                            ctr++;
+                        }
+                    } 
+
+                    var progressbar = 0;
+                    var strength = "";
+                    var bClass = "";
+                    switch (ctr) {
+                        case 0:
+                        case 1: 
+                            strength = "Way too Weak";
+                            progressbar = 15;
+                            bClass = "bg-danger";
+                            break;
+                        case 2:
+                            strength = "Very Weak";
+                            progressbar = 25;
+                            bClass = "bg-danger";
+                            break;
+                        case 3:
+                            strength = "Weak";    
+                            progressbar = 34;
+                            bClass = "bg-warning";            
+                            break;
+                        case 4:
+                            strength = "Medium";
+                            progressbar = 65;
+                            bClass = "bg-warning";                        
+                            break;
+                    }
+
+                    if (strength == "Medium" && form.elements.validationPassword.value.length >= 8 ) {
+                        strength = "Strong";
+                        bClass = "bg-success";            
+                        form.elements.validationPassword.setCustomValidity("");            
+                    } else {
+                        form.elements.validationPassword.setCustomValidity(strength);
+                    }
+
+                    var sometext = "";
+
+                    if(form.elements.validationPassword.value.length < 8 ){
+                        var lengthI = 8 - form.elements.validationPassword.value.length;
+                        sometext += ` ${lengthI} more Characters, `;
+                    } 
+
+                    sometext += messageCase;
+
+                    if(sometext){
+                        sometext = " You Need" + sometext;
+                    }
+
+                    $("#feedbackin, #feedbackirn").text(strength + sometext);
+                    $("#progressbar").removeClass( "bg-danger bg-warning bg-success" ).addClass(bClass);
+                    var plength = form.elements.validationPassword.value.length ;
+                    if(plength > 0) progressbar += ((plength - 0) * 1.75) ;
+                    var  percentage = progressbar + "%";
+                    form.elements.validationPassword.parentNode.classList.add('was-validated');
+                    $("#progressbar").width( percentage );
+
+                    if(form.elements.validationPassword.checkValidity() === true){
+                        form.elements.validationPassword.disabled = false;
+                    } else {
+                        form.elements.validationPassword.disabled = true;
+                    }
+                }); 
+            });
+        }, false);
+    })();    
+</script>
+<script>
+    function validateUsername() {
+    var username = document.getElementById("username").value;
+    if (username.length < 4) {
+        document.getElementById("username").classList.add("is-invalid");
+        document.getElementById("username").classList.remove("is-valid");
+        document.getElementById("usernameError").innerHTML = "Please enter a valid username.";
+    } else {
+        document.getElementById("username").classList.add("is-valid");
+        document.getElementById("username").classList.remove("is-invalid");
+    }
+};
+    function validateEmail() {
+        var email = document.getElementById("email").value;
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(email)) {
+            document.getElementById("email").classList.add("is-valid");
+            document.getElementById("email").classList.remove("is-invalid");
+        } else {
+            document.getElementById("email").classList.add("is-invalid");
+            document.getElementById("email").classList.remove("is-valid");
+        }
+    };
+
+    function validateCountry() {
+    var country = document.getElementById("country").value;
+    if (!country) {
+        document.getElementById("country").classList.add("is-invalid");
+        document.getElementById("country").classList.remove("is-valid");
+    } else {
+        document.getElementById("country").classList.add("is-valid");
+        document.getElementById("country").classList.remove("is-invalid");
+    }
+};
+
+function validateState() {
+    var state = document.getElementById("region").value;
+    if (!state) {
+        document.getElementById("region").classList.add("is-invalid");
+        document.getElementById("region").classList.remove("is-valid");
+    } else {
+        document.getElementById("region").classList.add("is-valid");
+        document.getElementById("region").classList.remove("is-invalid");
+    }
+}
+
+function validateCity() {
+    var city = document.getElementById("city").value;
+    if (!city) {
+        document.getElementById("city").classList.add("is-invalid");
+        document.getElementById("city").classList.remove("is-valid");
+    } else {
+        document.getElementById("city").classList.add("is-valid");
+        document.getElementById("city").classList.remove("is-invalid");
+    }
+}
+
+function validateStreetAddress() {
+    var streetAddress = document.getElementById("streetAddress").value;
+    if (!streetAddress) {
+        document.getElementById("streetAddress").classList.add("is-invalid");
+        document.getElementById("streetAddress").classList.remove("is-valid");
+    } else {
+        document.getElementById("streetAddress").classList.add("is-valid");
+        document.getElementById("streetAddress").classList.remove("is-invalid");
+    }
+}
+
+function validatePostalCode() {
+    var postalCode = document.getElementById("postalCode").value;
+    var regex = /^[0-9]{6}?$/;
+    if (!regex.test(postalCode)) {
+        document.getElementById("postalCode").classList.add("is-invalid");
+        document.getElementById("postalCode").classList.remove("is-valid");
+        document.getElementById("postalCodeError").innerHTML = "Please enter a valid postal code.";
+    } else {
+        document.getElementById("postalCode").classList.add("is-valid");
+        document.getElementById("postalCode").classList.remove("is-invalid");
+        document.getElementById("postalCodeError").innerHTML = "";
+    }
+}
+
+function validatePhone() {
+    var phone = document.getElementById("phone").value;
+    if (/^(\d+,)*(\d+)$/.test(phone) != true){
+        document.getElementById("phone").classList.add("is-invalid");
+        document.getElementById("phone").classList.remove("is-valid");
+        document.getElementById("phoneError").innerHTML = "Only numbers are allowed!";
+        document.getElementById("phone").value = "";
+    }
+    if ((phone[0] == '6' || phone[0] == '7' || phone[0]  == '8'|| phone[0] == '9')){
+        var regex = /^\d{10}$/;
+        if (!regex.test(phone)) {
+            document.getElementById("phone").classList.add("is-invalid");
+            document.getElementById("phone").classList.remove("is-valid");
+            document.getElementById("phoneError").innerHTML = "Please enter a valid phone number.";
+        } else {
+            document.getElementById("phone").classList.add("is-valid");
+            document.getElementById("phone").classList.remove("is-invalid");
+            document.getElementById("phoneError").innerHTML = "";
+        }
+} else {
+    document.getElementById("phone").classList.add("is-invalid");
+    document.getElementById("phone").classList.remove("is-valid");
+    document.getElementById("phoneError").innerHTML = "Please enter only numbers!";
+    document.getElementById("phone").value = "";
+};
+};
+// document.getElementById("state").addEventListener("change", validateState);
+// document.getElementById("city").addEventListener("change", validateCity);
+// document.getElementById("streetAddress").addEventListener("change", validateStreetAddress);
+// document.getElementById("postalCode").addEventListener("change", validatePostalCode);
+// document.getElementById("phone").addEventListener("change", validatePhone);
+    function validation() {
+        const name = document.getElementById("username").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("validationPassword").value;
+        const country = document.getElementById("country").value;
+        const state = document.getElementById("region").value;
+        const city = document.getElementById("city").value;
+        const streetAddress = document.getElementById("streetAddress").value;
+        const postalCode = document.getElementById("postalCode").value;
+        const role = document.getElementById("role").value;
+        const phone = document.getElementById("phone").value;
+
+        if (!name || !email || !password || !country || !state || !city || !streetAddress || !postalCode || !role || !phone) {
+            event.preventDefault(); // Prevent form submission
+            if (!name) {
+                document.getElementById("username").classList.add("is-invalid");
+            }
+            if (!email) {
+                document.getElementById("email").classList.add("is-invalid");
+            }
+            if (!country) {
+                document.getElementById("country").classList.add("is-invalid");
+            }
+            if (!state) {
+                document.getElementById("region").classList.add("is-invalid");
+            }
+            if (!city) {
+                document.getElementById("city").classList.add("is-invalid");
+            }
+            if (!streetAddress) {
+                document.getElementById("streetAddress").classList.add("is-invalid");
+            }
+            if (!postalCode) {
+                document.getElementById("postalCode").classList.add("is-invalid");
+            }
+            if (!role) {
+                document.getElementById("role").classList.add("is-invalid");
+            }
+            if (!phone) {
+                document.getElementById("phone").classList.add("is-invalid");
+            }
+        }
+        if (name || email || password || country || state || city || streetAddress || postalCode || role || phone) {
+            if (name) {
+                document.getElementById("username").classList.add("is-valid");
+            }
+            if (email) {
+                document.getElementById("email").classList.add("is-valid");
+            }
+            if (password) {
+                document.getElementById("validationPassword").classList.add("is-valid");
+            }
+            if (country) {
+                document.getElementById("country").classList.add("is-valid");
+            }
+            if (state) {
+                document.getElementById("region").classList.add("is-valid");
+            }
+            if (city) {
+                document.getElementById("city").classList.add("is-valid");
+            }
+            if (streetAddress) {
+                document.getElementById("streetAddress").classList.add("is-valid");
+            }
+            if (postalCode) {
+                document.getElementById("postalCode").classList.add("is-valid");
+            }
+            if (role) {
+                document.getElementById("role").classList.add("is-valid");
+            }
+            if (phone) {
+                document.getElementById("phone").classList.add("is-valid");
+            }
+
+            if (name == "" || email == "" || password == "" || postalCode == "" || phone == "") {
+                alert("Please fill in all fields and agree to the terms and conditions.");
+                return false;
+            }
+            return true;
+
+        }
+    };
+</script>
+
+<script>
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                // making sure password enters the right characters
+                form.validationPassword.addEventListener('keypress', function(event){
+                    // console.log("keypress");
+                    // console.log("event.which: " + event.which);
+                    var checkx = true;
+                    var chr = String.fromCharCode(event.which);
+                    // console.log("char: " + chr);
+
+                    var matchedCase = new Array();
+                    matchedCase.push("[!@#$%&*_?]"); // Special Character
+                    matchedCase.push("[A-Z]");      // Uppercase Alphabets
+                    matchedCase.push("[0-9]");      // Numbers
+                    matchedCase.push("[a-z]");
+
+                    for (var i = 0; i < matchedCase.length; i++) {
+                        if (new RegExp(matchedCase[i]).test(chr)) {
+                            // console.log("checkx: is true");                    
+                            checkx = false;
+                        }
+                    } 
+
+                    if(form.validationPassword.value.length >= 50)
+                        checkx = true;
+
+                        if ( checkx ) {
+                            event.preventDefault();
+                            event.stopPropagation();      
+                        }
+
+                });
+
+                // Validate Password to have more than 8 Characters and A capital Letter, small letter, number, and special character
+                // Create an array and push all possible values that you want in the password
+                var matchedCase = new Array();
+                matchedCase.push("[$@$$!%*#?&]"); // Special Character
+                matchedCase.push("[A-Z]");      // Uppercase Alphabets
+                matchedCase.push("[0-9]");      // Numbers
+                matchedCase.push("[a-z]");     // Lowercase Alphabets
+
+                form.validationPassword.addEventListener('keyup', function(){
+
+                    var messageCase = new Array();
+                    messageCase.push(" Special Character"); // Special Character
+                    messageCase.push(" Upper Case");      // Uppercase Alphabets
+                    messageCase.push(" Numbers");      // Numbers
+                    messageCase.push(" Lower Case");     // Lowercase Alphabets
+
+                    var ctr = 0;
+                    var rti = "";
+                    for (var i = 0; i < matchedCase.length; i++) {
+                        if (new RegExp(matchedCase[i]).test(form.validationPassword.value)) {
+                            if(i == 0) messageCase.splice(messageCase.indexOf(" Special Character"), 1);
+                            if(i == 1) messageCase.splice(messageCase.indexOf(" Upper Case"), 1);
+                            if(i == 2) messageCase.splice(messageCase.indexOf(" Numbers"), 1);
+                            if(i == 3) messageCase.splice(messageCase.indexOf(" Lower Case"), 1);
+                            ctr++;
+                        }
+                    } 
+
+                    var progressbar = 0;
+                    var strength = "";
+                    var bClass = "";
+                    switch (ctr) {
+                        case 0:
+                        case 1: 
+                            strength = "Way too Weak";
+                            progressbar = 15;
+                            bClass = "bg-danger";
+                            break;
+                        case 2:
+                            strength = "Very Weak";
+                            progressbar = 25;
+                            bClass = "bg-danger";
+                            break;
+                        case 3:
+                            strength = "Weak";    
+                            progressbar = 34;
+                            bClass = "bg-warning";            
+                            break;
+                        case 4:
+                            strength = "Medium";
+                            progressbar = 65;
+                            bClass = "bg-warning";                        
+                            break;
+                    }
+
+                    if (strength == "Medium" && form.validationPassword.value.length >= 8 ) {
+                        strength = "Strong";
+                        bClass = "bg-success";            
+                        form.validationPassword.setCustomValidity("");            
+                    } else {
+                        form.validationPassword.setCustomValidity(strength);
+                    }
+
+                    var sometext = "";
+
+                    if(form.validationPassword.value.length < 8 ){
+                        var lengthI = 8 - form.validationPassword.value.length;
+                        sometext += ` ${lengthI} more Characters, `;
+                    } 
+
+                    sometext += messageCase;
+
+                    if(sometext){
+                        sometext = " You Need" + sometext;
+                    }
+
+                    $("#feedbackin, #feedbackirn").text(strength + sometext);
+                    $("#progressbar").removeClass( "bg-danger bg-warning bg-success" ).addClass(bClass);
+                    var plength = form.validationPassword.value.length ;
+                    if(plength > 4) progressbar += ((plength - 0) * 1.75) ;
+                    var  percentage = progressbar + "%";
+                    form.validationPassword.parentNode.classList.add('was-validated');
+                    $("#progressbar").width( percentage );
+
+                    if(form.validationPassword.checkValidity() === true){
+                        form.validationPassword.disabled = false;
+                    } else {
+                        form.validationPassword.disabled = true;
+                    }
+                }); 
+            });
+        }, false);
+    })();    
+</script>
+
+<script>
+$(document).ready(function() {
+  //-------------------------------SELECT CASCADING-------------------------//
+  var selectedCountry = (selectedRegion = selectedCity = "");
+  // This is a demo API key for testing purposes. You should rather request your API key (free) from http://battuta.medunes.net/
+  var BATTUTA_KEY = "00000000000000000000000000000000";
+  // Populate country select box from battuta API
+  url =
+    "https://battuta.medunes.net/api/country/all/?key=" +
+    BATTUTA_KEY +
+    "&callback=?";
+
+  // EXTRACT JSON DATA.
+  $.getJSON(url, function(data) {
+    // console.log(data);
+    $.each(data, function(index, value) {
+      // APPEND OR INSERT DATA TO SELECT ELEMENT.
+      $("#country").append(
+        '<option value="' + value.code + '">' + value.name + "</option>"
+      );
+    });
+  });
+  // Country selected --> update region list .
+  $("#country").change(function() {
+    selectedCountry = this.options[this.selectedIndex].text;
+    countryCode = $("#country").val();
+    // Populate country select box from battuta API
+    url =
+      "https://battuta.medunes.net/api/region/" +
+      countryCode +
+      "/all/?key=" +
+      BATTUTA_KEY +
+      "&callback=?";
+    $.getJSON(url, function(data) {
+      $("#region option").remove();
+      $('#region').append('<option value="">Please select your region</option>');
+      $.each(data, function(index, value) {
+        // APPEND OR INSERT DATA TO SELECT ELEMENT.
+        $("#region").append(
+          '<option value="' + value.region + '">' + value.region + "</option>"
+        );
+      });
+    });
+  });
+  // Region selected --> updated city list
+  $("#region").on("change", function() {
+    selectedRegion = this.options[this.selectedIndex].text;
+    // Populate country select box from battuta API
+    countryCode = $("#country").val();
+    region = $("#region").val();
+    url =
+      "https://battuta.medunes.net/api/city/" +
+      countryCode +
+      "/search/?region=" +
+      region +
+      "&key=" +
+      BATTUTA_KEY +
+      "&callback=?";
+    $.getJSON(url, function(data) {
+    //   console.log(data);
+      $("#city option").remove();
+      $('#city').append('<option value="">Please select your city</option>');
+      $.each(data, function(index, value) {
+        // APPEND OR INSERT DATA TO SELECT ELEMENT.
+        $("#city").append(
+          '<option value="' + value.city + '">' + value.city + "</option>"
+        );
+      });
+    });
+  });
+  // city selected --> update location string
+  $("#city").on("change", function() {
+    selectedCity = this.options[this.selectedIndex].text;
+    $("#location").html(
+      "Locatation: Country: " +
+        selectedCountry +
+        ", Region: " +
+        selectedRegion +
+        ", City: " +
+        selectedCity
+    );
+  });
+});
+
+</script>
+
+
+{% endblock javascripts %}

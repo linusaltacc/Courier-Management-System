@@ -1,27 +1,31 @@
-{% extends "admin/base.html" %}
+{% extends "manager/base.html" %}
 
 {% block title %} All Orders {% endblock %}
 
 <!-- Specific Page CSS goes HERE -->
 {% block stylesheets %}
     <!-- Add any CSS styles specific to this page if needed -->
+    <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-notify/0.2.0/js/bootstrap-notify.min.js"></script>    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script type="text/javascript" src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 {% endblock stylesheets %}
 
 {% block content %}
+
 <main>
     <div class="container">
         <h1 class="mt-5 mb-4">All Orders</h1>
         <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead>
+            <table class="table table-flush" id="datatable">
+                <thead class="thead-light">
                     <tr>
                         <th>Order ID</th>
                         <th>Sender Name</th>
                         <th>Recipient Name</th>
                         <th>Status</th>
                         <th>Action</th>
-                        <th>Assigned to</th>
-                        
                     </tr>
                 </thead>
                 <tbody>
@@ -32,12 +36,6 @@
                             <td>{{ order.sender_name }}</td>
                             <td>{{ order.recipient_name }}</td>
                             <td>{{ order.status }}</td>
-                            {% if order.courier_id %}
-                                <td>{{ order.courier_id }}</td>
-                            {% else %}
-                                <td>Not Assigned</td>
-                            {% endif %}
-                            
                             <td>
                                 <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewOrderModal{{ loop.index }}">View</a>
                                 <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editOrderModal{{ loop.index }}">Edit</a>
@@ -105,7 +103,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for timestamp, tracking_entry in order.tracking_history.items() %}
+                                {% for timestamp, tracking_entry in order.tracking_history.items()|sort(attribute='0', reverse=True) %}
                                     <tr>
                                         <td>{{ timestamp }}</td>
                                         <td>{{ tracking_entry.location }}</td>
@@ -266,6 +264,35 @@
     }
 </script>
 
+{% if post %}
+<script>  
 
+    const notyf = new Notyf({
+        position: {
+            x: 'right',
+            y: 'top',
+        },
+        types: [
+            {
+                type: 'info',
+                background: 'blue',
+                icon: {
+                    className: 'fas fa-info-circle',
+                    tagName: 'span',
+                    color: '#fff'
+                },
+                dismissible: false
+            }
+        ]
+    });
+    notyf.open({
+        type: 'success',
+        message: 'Action successful!'
+    });
+</script>
+{% endif %}
 
+<script>
+let table = new DataTable('#datatable');
+</script>
 {% endblock javascripts %}

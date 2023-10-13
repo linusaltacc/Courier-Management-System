@@ -1,0 +1,117 @@
+{% extends "manager/base.html" %}
+
+{% block title %} Update Delivery {% endblock title %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+<!-- Add these lines to include Leaflet CSS and JavaScript -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src='https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js'></script>
+    <!-- Add any CSS styles specific to this page if needed -->
+{% endblock stylesheets %}
+
+{% block content %}
+<main>
+    <div class="container table-responsive py-4">
+        <h1 class="mt-5 mb-4">Update Delivery</h1>
+        <form method="POST" class="needs-validation  mb-5 border-top" novalidate onsubmit="return validation()" action="/api/update_delivery" >
+            <div class="mb-3">
+                <label for="order_id" class="form-label">Order ID</label>
+                <select class="form-select" id="order_id" name="order_id" required>
+                    {% for order in order_ids %}
+                    {% if order.status != "Delivered" %}
+                        <option value="{{ order.id }}">{{ order.id }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status" required>
+                    <option value="In Transit">In Transit</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Pickup">Pickup</option>
+                    <option value="Arrived at Warehouse">Arrived at Warehouse</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Ready for Shipment">Ready for Shipment</option>
+                    <option value="On Hold">On Hold</option>
+                    <option value="Delayed">Delayed</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input type="text" class="form-control" id="location" name="location" onchange="validateLocation();"  required>
+            </div>            
+
+            <button type="submit" onsubmit="validation();" class="btn btn-primary">Update Delivery</button>
+            
+        </form>
+    </div>
+</main>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+    <script>
+function validateLocation(){
+
+    var location = document.getElementById("location").value;
+    if (location.length < 4) {
+        document.getElementById("location").classList.add("is-invalid");
+        document.getElementById("location").classList.remove("is-valid");
+    } else {
+        document.getElementById("location").classList.add("is-valid");
+        document.getElementById("location").classList.remove("is-invalid");
+    }
+}
+    </script>
+
+    <script>
+        function validation() {
+        const order_id = document.getElementById("order_id").value;
+        const status = document.getElementById("status").value;
+        const location = document.getElementById("location").value;
+
+        if (!order_id || !status || !location) {
+            event.preventDefault(); // Prevent form submission
+            if (!order_id) {
+                document.getElementById("order_id").classList.add("is-invalid");
+            }
+            if (!status) {
+                document.getElementById("status").classList.add("is-invalid");
+            }
+            if (!location) {
+                document.getElementById("location").classList.add("is-invalid");
+            }
+        }
+        if (order_id || status || location) {
+            if (order_id) {
+                document.getElementById("order_id").classList.remove("is-invalid");
+                document.getElementById("order_id").classList.add("is-valid");
+            }
+            if (status) {
+                document.getElementById("status").classList.remove("is-invalid");
+                document.getElementById("status").classList.add("is-valid");
+            }
+            if (location){
+                document.getElementById("location").classList.remove("is-invalid");
+                document.getElementById("location").classList.add("is-valid");
+            }
+        }
+            if (order_id =="" || status == "" || location == "") {
+                alert("Please fill in all fields and agree to the terms and conditions.");
+                return false;
+            }
+            else {
+                console.log("Form submitted");
+                return true;
+            }
+    };
+    </script>
+{% endblock javascripts %}

@@ -1,0 +1,118 @@
+{% extends "admin/base.html" %}
+
+{% block title %} All Orders {% endblock %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+    <!-- Add any CSS styles specific to this page if needed -->
+    <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-notify/0.2.0/js/bootstrap-notify.min.js"></script>    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script type="text/javascript" src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+{% endblock stylesheets %}
+
+{% block content %}
+
+<main>
+    <div class="container">
+        <h1 class="mt-5 mb-4">All Orders</h1>
+        <div class="table-responsive">
+            <table class="table table-flush" id="datatable">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Sender Name</th>
+                        <th>Recipient Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through orders and generate rows -->
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order_ids[loop.index0] }}</td>
+                            <td>{{ order.sender_name }}</td>
+                            <td>{{ order.recipient_name }}</td>
+                            <td>{{ order.status }}</td>
+                            <td>
+                                <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewOrderModal{{ loop.index }}">View</a>
+                            </td>
+                        </tr>
+                        <script>
+                        $(document).ready(function() {
+                            var table1 = new DataTable('#datatable{{ loop.index }}');
+                        });
+                        </script>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- View and Edit Modals -->
+{% for order in orders %}
+
+    <!-- View Order Modal -->
+    <div class="modal fade" id="viewOrderModal{{ loop.index }}" tabindex="-1" aria-labelledby="viewOrderModal{{ loop.index }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewOrderModal{{ loop.index }}Label">Order Logs - {{ order_ids[loop.index0] }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add content here to display order details -->
+                    <!-- Tracking History -->
+                    <div class="table-responsive">
+                        <h4>Logging History</h4>
+                        {% if 'logs' in order %}
+                        <table class="table table-flush" id="datatable{{ loop.index }}">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Action</th>
+                                    <th>Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                    {% for timestamp, message in order.logs.items() %}
+                                        <tr>
+                                            <td>{{ timestamp }}</td>
+                                            <td>{{ message['message'] }}</td>
+                                            {% if 'location' not in message %}
+                                                <td>N/A</td>
+                                            {% else %}
+                                                <td>{{ message['location'] }}</td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                                <tr>
+                                    <td colspan="3">No logs found</td>
+                                </tr>
+                            {% endif %}
+                    </div>
+                    <!-- Include more order details here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endfor %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+<script>
+    let table = new DataTable('#datatable');
+
+    </script>
+{% endblock javascripts %}

@@ -5,6 +5,8 @@
 <!-- Specific Page CSS goes HERE -->
 {% block stylesheets %}
     <!-- Add any CSS styles specific to this page if needed -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+
 {% endblock stylesheets %}
 
 {% block content %}
@@ -59,7 +61,10 @@
                             <p><strong>Name:</strong> {{ customer.username }}</p>
                             <p><strong>Phone:</strong> {{ customer.phone }}</p>
                             <p><strong>Email:</strong> {{ customer.email }}</p>
-z
+                            <p><strong>Address:</strong> {{ customer.address }}</p>
+                            <p><strong>City:</strong> {{customer.city}}</p>
+                            <p><strong>State:</strong> {{customer.state}}</p>
+                            <p><strong>Country:</strong> {{customer.country}}</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -92,6 +97,40 @@ z
                         <label for="email" class="form-label">Email</label>
                         <input type="text" class="form-control" id="email" name="email" value="{{ customer.email }}">
                     </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="country">Country</label>
+                                    <select id="country{{ loop.index }}" name="country" class='form-control'>
+                                        <option value="">-- Country --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="state">State/Province</label>
+                                    <select id="state{{ loop.index }}" name="state" class='form-control'>
+                                        <option value="{{customer.state}}">-- State --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="city">City</label>
+                        <select id="city{{ loop.index }}" name="city" class='form-control'>
+                            <option value="{{customer.city}}">-- City --</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="streetAddress">Street Address</label>
+                        <input type="text" class="form-control" id="streetAddress" name="streetAddress" value="{{customer.streetAddress}}" required>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="postalCode">Postal Code</label>
+                        <input type="text" class="form-control" id="postalCode" name="postalCode" value="{{customer.postalCode}}" required>
+                    </div>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-gray-800" data-bs-dismiss="modal">Edit customer</button>
                     </div>
@@ -101,12 +140,63 @@ z
     </div>
 </div>
 
+<script>
+$(document).ready(function() {
+    // This is a demo API key for testing purposes. You should request your API key (free) from http://battuta.medunes.net/
+    var BATTUTA_KEY = "00000000000000000000000000000000";
 
+    // Populate country select box from battuta API
+    var $countryDropdown = $('#country{{ loop.index }}');
+    var $stateDropdown = $('#state{{ loop.index }}');
+    var $cityDropdown = $('#city{{ loop.index }}');
+    var $location = $('#location{{ loop.index }}');
+
+    $.getJSON("https://battuta.medunes.net/api/country/all/?key=" + BATTUTA_KEY + "&callback=?", function(data) {
+        $.each(data, function(index, value) {
+            $countryDropdown.append('<option value="' + value.code + '">' + value.name + '</option>');
+        });
+    });
+
+    // Country selected -> update state list
+    $countryDropdown.on('change', function() {
+        var countryCode = $(this).val();
+        $stateDropdown.empty().append('<option value="">Please select your state</option>');
+        $cityDropdown.empty().append('<option value="">Please select your city</option>');
+        $.getJSON("https://battuta.medunes.net/api/region/" + countryCode + "/all/?key=" + BATTUTA_KEY + "&callback=?", function(data) {
+            $.each(data, function(index, value) {
+                $stateDropdown.append('<option value="' + value.region + '">' + value.region + '</option>');
+            });
+        });
+    });
+
+    // State selected -> update city list
+    $stateDropdown.on('change', function() {
+        var countryCode = $countryDropdown.val();
+        var state = $(this).val();
+        $cityDropdown.empty().append('<option value="">Please select your city</option>');
+        $.getJSON("https://battuta.medunes.net/api/city/" + countryCode + "/search/?region=" + state + "&key=" + BATTUTA_KEY + "&callback=?", function(data) {
+            $.each(data, function(index, value) {
+                $cityDropdown.append('<option value="' + value.city + '">' + value.city + '</option>');
+            });
+        });
+    });
+
+    // City selected -> update location string
+    $cityDropdown.on('change', function() {
+        var country = $countryDropdown.find('option:selected').text();
+        var state = $stateDropdown.find('option:selected').text();
+        var city = $(this).find('option:selected').text();
+        $location.html('Location: Country: ' + country + ', State: ' + state + ', City: ' + city);
+    });
+});
+</script>
+    
 
 {% endfor %}
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE -->
 {% block javascripts %}
+
 
 {% endblock javascripts %}

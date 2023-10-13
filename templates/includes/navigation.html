@@ -69,7 +69,16 @@
                 <img class="avatar rounded-circle" alt="Image placeholder" src="/static/assets/img/team/dummy_profile_pic.jpg">
                 <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                   <span class="mb-0 font-small fw-bold text-gray-900">
-                    Current User: <strong>{{ user }}</strong>
+                    Current {{ session['role'] }}: 
+                    {% if session['role'] == 'manager' %}
+                        <strong>{{ session['manager'] }}</strong>
+                    {% elif session['role'] == 'courier' %}
+                    <strong>{{ session['courier'] }}</strong>
+                    {% elif session['role'] == 'customer' %}
+                    <strong>{{ session['customer'] }}</strong>
+                    {% elif session['role'] == 'admin' %}
+                    <strong>{{ session['admin'] }}</strong>
+                    {% endif %}
                   </span>
                 </div>
               </div>

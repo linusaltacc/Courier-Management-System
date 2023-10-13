@@ -36,7 +36,7 @@ def send_mail(username, email, subject, message):
     content=header+content
     mail.sendmail(sender, recipient, content)
     mail.close()
-
+    print("Email sent successfully!")
 def send_otp(username, role):
     otp = generate_otp()
     user_ref = db.collection(role).document(username)
@@ -53,13 +53,19 @@ def verify_otp(username, role, otp):
     else:
         return False
 
-def create_courier( username, email, password, notifications={}):
+def create_courier(username, email, password, streetAddress, city, state, country, phone, notifications={}):
     courier_ref = db.collection("couriers").document(username)
     if not courier_ref.get().exists:
         courier_data = {
             "username": username,
             "email": email,
             "password": hash_password(password), 
+            "streetAddress": streetAddress,
+            "city": city,
+            "state": state,
+            "country": country,
+            "phone": phone,
+            "address": streetAddress + ", " + city + ", " + state + ", " + country,
             "notifications": notifications, 
             "avg_time": "0",
         }
@@ -69,18 +75,44 @@ def create_courier( username, email, password, notifications={}):
         return False
 
 # Define a function to create a document for Customer
-def create_customer(username, email, password, notifications={}):
+def create_customer(username, email, password, streetAddress, city, state, country, phone, notifications={}):
     customer_ref = db.collection("customers").document(username)
     if not customer_ref.get().exists:
         customer_data = {
             "username": username,
             "email": email,
             "password": hash_password(password),  
+            "streetAddress": streetAddress,
+            "city": city,
+            "state": state,
+            "country": country,
+            "phone": phone,
+            "address": streetAddress + ", " + city + ", " + state + ", " + country,
             "notifications": notifications
         }
         customer_ref.set(customer_data)
     else:
         print("Customer already exists")
+        return False
+
+def create_manager(username, email, password, streetAddress, city, state, country, phone, notifications={}):
+    manager_ref = db.collection("managers").document(username)
+    if not manager_ref.get().exists:
+        manager_data = {
+            "username": username,
+            "email": email,
+            "password": hash_password(password),  
+            "streetAddress": streetAddress,
+            "city": city,
+            "state": state,
+            "country": country,
+            "phone": phone,
+            "address": streetAddress + ", " + city + ", " + state + ", " + country,
+            "notifications": notifications
+        }
+        manager_ref.set(manager_data)
+    else:
+        print("Manager already exists")
         return False
 
 # Define a function to create a document for Admin
@@ -146,21 +178,25 @@ def get_admin_dashboard_details():
         return [no_couriers, no_customers, no_orders, no_orders_delivered, no_orders_pending, no_orders_in_transit]
 
 def get_courier_dashboard_details(courier_id):
-        db_orders = db.collection('orders').where(filter=FieldFilter('courier_id', '==', courier_id))
-        no_orders_assigned = len(db_orders.get())
-        no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
-        no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
-        return [no_orders_delivered, no_orders_assigned, no_orders_in_transit]
-
+        try:
+            db_orders = db.collection('orders').where(filter=FieldFilter('courier_id', '==', courier_id))
+            no_orders_assigned = len(db_orders.get())
+            no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
+            no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
+            return [no_orders_delivered, no_orders_assigned, no_orders_in_transit]
+        except:
+            return [0, 0, 0]
 def get_customer_dashboard_details(customer_id):
-        db_orders = db.collection('orders').where(filter=FieldFilter('user_id', '==', customer_id))
-        no_orders = len(db_orders.get())
-        no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
-        no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
-        notifications =  db.collection('customers').document(customer_id).get().to_dict().get('notifications')
-        new_notifications = sorted(notifications)[len(notifications)-1]
-        return [no_orders_delivered, no_orders, no_orders_in_transit, notifications[new_notifications]['message']]
-
+        try:
+            db_orders = db.collection('orders').where(filter=FieldFilter('user_id', '==', customer_id))
+            no_orders = len(db_orders.get())
+            no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
+            no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
+            notifications =  db.collection('customers').document(customer_id).get().to_dict().get('notifications')
+            new_notifications = sorted(notifications)[len(notifications)-1]
+            return [no_orders_delivered, no_orders, no_orders_in_transit, notifications[new_notifications]['message']]
+        except:
+            return [0, 0, 0, 'No new notifications']
 # Get all couriers
 def get_all_couriers():
     couriers_ref = db.collection("couriers").stream()

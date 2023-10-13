@@ -8,6 +8,8 @@
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/ol@v8.1.0/dist/ol.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.1.0/ol.css">
+<!-- <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js'></script> -->
+
 <style>
     img.huechange { filter: hue-rotate(120deg); }
 </style>
@@ -30,25 +32,25 @@
                                 Fill in the details below to create a new order.
                             </p>
                         </div>
-                        <form method="post" action="" class="mt-4">
+                        <form method="post" action="" class="needs-validation  mb-5 border-top" novalidate onsubmit="return validation()"  class="mt-4">
                             <div class="row">
                                 <!-- Left Column for Sender Information -->
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="sender_name" class="form-label">Sender Name</label>
-                                        <input type="text" class="form-control" id="sender_name" name="sender_name" placeholder="Sender Name" required>
+                                        <input type="text" class="form-control" id="sender_name" name="sender_name" placeholder="Sender Name" value="{{customer.username}}" onchange="validateField(this)" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="sender_address" class="form-label">Sender Address</label>
-                                        <input type="text" class="form-control" id="sender_address" name="sender_address" placeholder="Sender Address" required>
+                                        <input type="text" class="form-control" id="sender_address" name="sender_address" placeholder="Sender Address" value="{{customer.address}}"  onchange="validateField(this)"  required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="sender_contact" class="form-label">Sender Contact</label>
-                                        <input type="text" class="form-control" id="sender_contact" name="sender_contact" placeholder="Sender Contact" required>
+                                        <input type="text" class="form-control" id="sender_contact" name="sender_contact" placeholder="Sender Contact" value="{{ customer.phone}}" maxlength="10" oninput="validateField(this);"  required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="package_weight" class="form-label">Package Weight (in kg)</label>
-                                        <input type="text" class="form-control" id="package_weight" name="package_weight" placeholder="Package Weight" min="0" max="100" required>
+                                        <input type="text" class="form-control" id="package_weight" name="package_weight" placeholder="Package Weight" min="0" max="100" onchange="validateField(this)" equired>
                                     </div>
                                 </div>
                         
@@ -56,24 +58,24 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="recipient_name" class="form-label">Recipient Name</label>
-                                        <input type="text" class="form-control" id="recipient_name" name="recipient_name" placeholder="Recipient Name" required>
+                                        <input type="text" class="form-control" id="recipient_name" name="recipient_name" placeholder="Recipient Name" onchange="validateField(this)" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="recipient_address" class="form-label">Recipient Address</label>
-                                        <input type="text" class="form-control" id="recipient_address" name="recipient_address" placeholder="Recipient Address" required>
+                                        <input type="text" class="form-control" id="recipient_address" name="recipient_address" placeholder="Recipient Address"  onchange="validateField(this)" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="recipient_contact" class="form-label">Recipient Contact</label>
-                                        <input type="text" class="form-control" id="recipient_contact" name="recipient_contact" placeholder="Recipient Contact" required>
+                                        <input type="numeric" class="form-control" id="recipient_contact" name="recipient_contact" placeholder="Recipient Contact" maxlength="10" oninput="validateField(this)" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="pickup_date" class="form-label">Pickup Date</label>
-                                        <input data-datepicker="" type="text" class="form-control" id="pickup_date" name="pickup_date"  placeholder="dd/mm/yyyy" required>
+                                        <input data-datepicker="" type="text" class="form-control" id="pickup_date" name="pickup_date"  placeholder="dd/mm/yyyy"  onclick="validateDate();" required>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="delivery_preference" class="form-label">Delivery Preference</label>
-                                    <select class="form-select" id="delivery_preference" name="delivery_preference" required>
+                                    <select class="form-select" id="delivery_preference" name="delivery_preference"  onchange="validateField(this)" required>
                                         <option value="Express">Express</option>
                                         <option value="Standard">Standard</option>
                                         <option value="Economy">Economy</option>
@@ -81,13 +83,13 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="package_weight" class="form-label">Package Details</label>
-                                    <input type="text" class="form-control" id="package_details" name="package_details" placeholder="Package Details" required>
+                                    <input type="text" class="form-control" id="package_details" name="package_details" placeholder="Package Details"  onchange="validateField(this)" required>
                                 </div>
                             </div>
                         
                             <div class="mb-3">
                                 <label for="additional_notes" class="form-label">Additional Notes</label>
-                                <textarea class="form-control" id="additional_notes" name="additional_notes" rows="4" placeholder="Additional Notes"></textarea>
+                                <textarea class="form-control" id="additional_notes" name="additional_notes" rows="4" placeholder="Additional Notes"  onchange="validateField(this)" ></textarea>
                             </div>
                             <label class="form-label">Deliver Latitude</label>
                             <input type="text" id="latitude" name="latitude" placeholder="latitude" readonly>
@@ -192,5 +194,222 @@ vectorSource.addFeature(feature);
     }
     var currentLocationMarker;
     updateLocation();
+</script>
+<script>
+    function validateDate(){
+    document.getElementById("pickup_date").classList.add("is-valid");
+    document.getElementById("pickup_date").classList.remove("is-invalid");
+    }
+  function validateField(field) {
+  // Get the field value
+  var value = field.value;
+
+  // Perform validation based on the field ID
+  switch (field.id) {
+    case "sender_name":
+      // Validate sender name
+      if (value.length < 3) {
+        document.getElementById("sender_name").classList.add("is-invalid");
+        document.getElementById("sender_name").classList.remove("is-valid");
+      }
+      else {
+        document.getElementById("sender_name").classList.add("is-valid");
+        document.getElementById("sender_name").classList.remove("is-invalid");
+      }
+      break;
+    case "sender_address":
+      // Validate sender address
+      if (value.length < 10) {
+        document.getElementById("sender_address").classList.add("is-invalid");
+        document.getElementById("sender_address").classList.remove("is-valid");
+      }
+      else {
+        document.getElementById("sender_address").classList.add("is-valid");
+        document.getElementById("sender_address").classList.remove("is-invalid");
+      }
+      break;
+    case "sender_contact":
+        var sender_contact = document.getElementById("sender_contact").value;
+        if (/^(\d+,)*(\d+)$/.test(sender_contact) != true){
+            document.getElementById("sender_contact").classList.add("is-invalid");
+            document.getElementById("sender_contact").classList.remove("is-valid");
+            document.getElementById("sender_contact").value = "";
+        }
+        if ((sender_contact[0] == '6' || sender_contact[0] == '7' || sender_contact[0]  == '8'|| sender_contact[0] == '9')){
+            var regex = /^\d{10}$/;
+            if (!regex.test(sender_contact)) {
+                document.getElementById("sender_contact").classList.add("is-invalid");
+                document.getElementById("sender_contact").classList.remove("is-valid");
+            } else {
+                document.getElementById("sender_contact").classList.add("is-valid");
+                document.getElementById("sender_contact").classList.remove("is-invalid");
+            }
+        } else {
+            document.getElementById("sender_contact").classList.add("is-invalid");
+            document.getElementById("sender_contact").classList.remove("is-valid");
+        }
+      break;
+      
+    case "package_weight":
+      // Validate package weight
+      if (value < 0 || value > 100) {
+        document.getElementById("package_weight").classList.add("is-invalid");
+        document.getElementById("package_weight").classList.remove("is-valid");
+      }
+      else {
+        document.getElementById("package_weight").classList.add("is-valid");
+        document.getElementById("package_weight").classList.remove("is-invalid");
+      }
+      break;
+    case "recipient_name":
+      // Validate recipient name
+      if (value.length < 3) {
+        document.getElementById("recipient_name").classList.add("is-invalid");
+        document.getElementById("recipient_name").classList.remove("is-valid");
+      }
+      else {
+        document.getElementById("recipient_name").classList.add("is-valid");
+        document.getElementById("recipient_name").classList.remove("is-invalid");
+      }
+      break;
+    case "recipient_address":
+      // Validate recipient address
+      if (value.length < 10) {
+        document.getElementById("recipient_address").classList.add("is-invalid");
+        document.getElementById("recipient_address").classList.remove("is-valid");
+      }
+      else {
+        document.getElementById("recipient_address").classList.add("is-valid");
+        document.getElementById("recipient_address").classList.remove("is-invalid");
+      }
+      break;
+    case "recipient_contact":
+      // Validate recipient contact
+      var recipient_contact = document.getElementById("recipient_contact").value;
+        if (/^(\d+,)*(\d+)$/.test(recipient_contact) != true){
+            document.getElementById("recipient_contact").classList.add("is-invalid");
+            document.getElementById("recipient_contact").classList.remove("is-valid");
+            document.getElementById("recipient_contact").value = "";
+        }
+        if ((recipient_contact[0] == '6' || recipient_contact[0] == '7' || recipient_contact[0]  == '8'|| recipient_contact[0] == '9')){
+            var regex = /^\d{10}$/;
+            if (!regex.test(recipient_contact)) {
+                document.getElementById("recipient_contact").classList.add("is-invalid");
+                document.getElementById("recipient_contact").classList.remove("is-valid");
+            } else {
+                document.getElementById("recipient_contact").classList.add("is-valid");
+                document.getElementById("recipient_contact").classList.remove("is-invalid");
+            }
+        }
+        else {
+            document.getElementById("recipient_contact").classList.add("is-invalid");
+            document.getElementById("recipient_contact").classList.remove("is-valid");
+        }
+    case "package_details":
+      if (value.length < 5) {
+        document.getElementById("package_details").classList.add("is-invalid");
+        document.getElementById("package_details").classList.remove("is-valid");
+      }
+      else{
+        document.getElementById("package_details").classList.add("is-valid");
+        document.getElementById("package_details").classList.remove("is-invalid");
+      }
+    case "delivery_preference":
+        if (value.length < 5) {
+            document.getElementById("delivery_preference").classList.add("is-invalid");
+            document.getElementById("delivery_preference").classList.remove("is-valid");
+        }
+        else{
+            document.getElementById("delivery_preference").classList.add("is-valid");
+            document.getElementById("delivery_preference").classList.remove("is-invalid");
+        }
+    }
+    };
+</script>
+<script>
+    function validation() {
+        const senderName = document.getElementById("sender_name").value;
+        const senderAddress = document.getElementById("sender_address").value;
+        const senderContact = document.getElementById("sender_contact").value;
+        const packageWeight = document.getElementById("package_weight").value;
+        const recipientName = document.getElementById("recipient_name").value;
+        const recipientAddress = document.getElementById("recipient_address").value;
+        const recipientContact = document.getElementById("recipient_contact").value;
+        const pickupDate = document.getElementById("pickup_date").value;
+        const packageDetails = document.getElementById("package_details").value;
+        const deliveryPreference = document.getElementById("delivery_preference").value;
+
+        if (!senderName || !senderAddress || !senderContact || !packageWeight || !recipientName || !recipientAddress || !recipientContact || !pickupDate || !packageDetails || !deliveryPreference) {
+            event.preventDefault(); // Prevent form submission
+            if (!senderName) {
+                document.getElementById("sender_name").classList.add("is-invalid");
+            }
+            if (!senderAddress) {
+                document.getElementById("sender_address").classList.add("is-invalid");
+            }
+            if (!senderContact) {
+                document.getElementById("sender_contact").classList.add("is-invalid");
+            }
+            if (!packageWeight) {
+                document.getElementById("package_weight").classList.add("is-invalid");
+            }
+            if (!recipientName) {
+                document.getElementById("recipient_name").classList.add("is-invalid");
+            }
+            if (!recipientAddress) {
+                document.getElementById("recipient_address").classList.add("is-invalid");
+            }
+            if (!recipientContact) {
+                document.getElementById("recipient_contact").classList.add("is-invalid");
+            }
+            if (!pickupDate) {
+                document.getElementById("pickup_date").classList.add("is-invalid");
+            }
+            if (!packageDetails) {
+                document.getElementById("package_details").classList.add("is-invalid");
+            }
+            if (!deliveryPreference) {
+                document.getElementById("delivery_preference").classList.add("is-invalid");
+            }
+        }
+        if (senderName || senderAddress || senderContact || packageWeight || recipientName || recipientAddress || recipientContact || pickupDate || packageDetails || deliveryPreference) {
+            if (senderName) {
+                document.getElementById("sender_name").classList.add("is-valid");
+            }
+            if (senderAddress) {
+                document.getElementById("sender_address").classList.add("is-valid");
+            }
+            if (senderContact) {
+                document.getElementById("sender_contact").classList.add("is-valid");
+            }
+            if (packageWeight) {
+                document.getElementById("package_weight").classList.add("is-valid");
+            }
+            if (recipientName) {
+                document.getElementById("recipient_name").classList.add("is-valid");
+            }
+            if (recipientAddress) {
+                document.getElementById("recipient_address").classList.add("is-valid");
+            }
+            if (recipientContact) {
+                document.getElementById("recipient_contact").classList.add("is-valid");
+            }
+            if (pickupDate) {
+                document.getElementById("pickup_date").classList.add("is-valid");
+            }
+            if (packageDetails) {
+                document.getElementById("package_details").classList.add("is-valid");
+            }
+            if (deliveryPreference) {
+                document.getElementById("delivery_preference").classList.add("is-valid");
+            }
+
+            if (senderName == "" || senderAddress == "" || senderContact == "" || recipientName == "" || recipientAddress == "" || recipientContact == "" || pickupDate == "" || packageDetails == "" || deliveryPreference == "") {
+                alert("Please fill in all fields.");
+                return false;
+            }
+            return true;
+        }
+    };
 </script>
 {% endblock javascripts %}
