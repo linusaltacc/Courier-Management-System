@@ -3,6 +3,8 @@ from datetime import datetime
 from helpers import *
 from firebase_admin.firestore import FieldFilter
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -37,22 +39,23 @@ def register():
         password = request.form['password']
         role = request.form['role']
         streetAddress = request.form['streetAddress']
+        line2address = request.form['line2address']
         city = request.form['city']
         state = request.form['state']
         country = request.form['country']
-        phone = request.form['phone']
+        phone = '+91'+request.form['phone']
         if role == 'customer':
-            create_customer(username, email, password, streetAddress, city, state, country, phone)                
+            create_customer(username, email, password, streetAddress, line2address, city, state, country, phone)                
         elif role == 'courier':
-            create_courier(username, email, password, streetAddress, city, state, country, phone)
+            create_courier(username, email, password, streetAddress, line2address, city, state, country, phone)
         # elif role == 'admin':
         #     create_admin(username, email,  password)
         elif role == 'manager':
-            create_manager(username, email, password, streetAddress, city, state, country, phone)
+            create_manager(username, email, password, streetAddress, line2address, city, state, country, phone)
         else:
             render_template_string('Invalid role. Please try again.')
         return render_template_string('success')
-    return render_template('register.html')
+    return render_template('register.html', GOOGLE_MAPS_API_KEY=os.getenv('GOOGLE_MAPS_API_KEY'), UT_API=os.getenv('UT_API'), UT_EMAIL=os.getenv('UT_EMAIL'))
 
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
@@ -112,6 +115,17 @@ def dashboard():
         order_ids = [{'id':order.id, 'status':order.to_dict()['status']} for order in order_ref]
         return render_template('/manager/dashboard.html', user=g.manager, segment='dashboard', order_ids=order_ids)
     return redirect(url_for('login'))
+
+@app.route('/profile')
+def settings():
+    if g.admin or g.customer or g.courier or g.manager:
+        role = g.role
+        username = g.get(role)
+        data = db.collection(role+'s').document(username).get().to_dict()
+        return render_template(role+'/profile.html', segment="profile", current_user={
+            "username": username, "role": role, "data": data
+        })
+    return render_template('login.html')
 
 # notifications for everyone
 @app.route('/dashboard/notifications', methods=['GET'])
@@ -215,6 +229,14 @@ def edit_courier(courier_id):
             return redirect(url_for('manage_couriers'))
     return redirect(url_for('login'))
 
+@app.route('/api/delete_courier/<courier_id>', methods=['POST'])
+def delete_courier(courier_id):
+    if g.admin :
+        if request.method == 'POST':
+            db.collection('couriers').document(courier_id).delete()
+            return redirect(url_for('manage_couriers'))
+    return redirect(url_for('login'))
+
 @app.route('/api/edit_customer/<customer_id>', methods=['POST'])
 def edit_customer(customer_id):
     if g.admin:
@@ -228,6 +250,32 @@ def edit_customer(customer_id):
             address =  streetAddress+','+city+','+state+','+country
             db.collection('customers').document(customer_id).update({'phone': phone, 'email': email, 'streetAddress': streetAddress, 'city': city, 'state': state, 'country': country, 'address': address})
             return redirect(url_for('manage_customers'))
+    return redirect(url_for('login'))
+
+@app.route('/api/delete_customer/<customer_id>', methods=['POST'])
+def delete_customer(customer_id):
+    if g.admin:
+        if request.method == 'POST':
+            db.collection('customers').document(customer_id).delete()
+            return redirect(url_for('manage_customers'))
+    return redirect(url_for('login'))
+
+@app.route('/api/edit_manager/<manager_id>', methods=['POST'])
+def edit_manager(manager_id):
+    if g.admin:
+        if request.method == 'POST':
+            phone = request.form['phone']
+            email = request.form['email']
+            db.collection('managers').document(manager_id).update({'phone': phone, 'email': email})
+            return redirect(url_for('manage_managers'))
+    return redirect(url_for('login'))
+
+@app.route('/api/delete_manager/<manager_id>', methods=['POST'])
+def delete_manager(manager_id):
+    if g.admin:
+        if request.method == 'POST':
+            db.collection('managers').document(manager_id).delete()
+            return redirect(url_for('manage_managers'))
     return redirect(url_for('login'))
 
 @app.route('/api/delete_order/<order_id>', methods=['POST'])
@@ -281,6 +329,7 @@ def update_delivery():
             customer_noti = customer_ref.get().to_dict()
             customer_noti['notifications'][now] = {'message': f'Your order has been updated to {status}', 'read': False}
             # send_mail(order['user_id'], f'Your order has been updated to {status}', f'Your order has been updated to {status}')
+            send_mail(username=order['user_id'], email=customer_noti['email'],subject=f'Your order has been updated to {status}', message=f'Your order has been updated to {status}')
             customer_ref.update(customer_noti)
                 
         order_ref = db.collection('orders').where('courier_id', '==', g.courier).get()
@@ -327,7 +376,7 @@ def assign_courier():
             order['logs'] = {now: {'message': 'Order has been assigned to ' + courier_id}}        
         order['status'] = 'Order assigned Courier'
         order['courier_id'] = courier_id
-        order['tracking_history'][now] =  {now: {'status': 'Your order has been assigned to a courier', 'location':'N/A'}}
+        order['tracking_history'][now] =  {'status': 'Your order has been assigned to a courier', 'location':'N/A'}
         # new_order = order['logs']
         # new_order = {datetime.now().strftime("%d/%m/%Y, %H:%M:%S"): {'message':'Your order has been assigned to '+courier_id}}
         # order['logs'] = new_order
@@ -335,6 +384,9 @@ def assign_courier():
         order_ref.update(order)
         # notifications
         courier_ref.update({'deliveries':{'order_id': order_id}, 'notifications': {order_id: {'message': 'You have been assigned to a new delivery', 'timestamp': datetime.now(),'read': False}}})
+        customer_ref = db.collection('customers').document(order['user_id'])
+        customer_noti = customer_ref.get().to_dict()
+        send_mail(username=order['user_id'], email=customer_noti['email'],subject=f'Your order has been assigned to a courier', message=f'Your order has been assigned to a courier')
         
 
         return jsonify({'success': True}), 200
@@ -366,6 +418,14 @@ def manage_customers():
         customer_ids = [courier.id for courier in customers_ref]
         return render_template('/admin/manage_customers.html', segment='manage_customers', customers=customers, customer_ids=customer_ids)
 
+@app.route('/dashboard/manage_managers', methods=['GET'])
+def manage_managers():
+    if g.admin:
+        managers_ref = db.collection('managers').get()
+        managers = [manager.to_dict() for manager in managers_ref]
+        manager_ids = [courier.id for courier in managers_ref]
+        return render_template('/admin/manage_managers.html', segment='manage_managers', managers=managers, manager_ids=manager_ids)
+    
 @app.route('/api/update_delivery', methods=['POST'])
 def api_update_delivery():
     if g.manager:

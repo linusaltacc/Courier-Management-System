@@ -33,7 +33,7 @@
                             <td>
                                 <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewCourierModal{{ loop.index }}">View</a>
                                 <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editCourierModal{{ loop.index }}">Edit</a>
-                                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                                <a href="#" class="btn btn-danger btn-sm"  data-bs-toggle="modal" data-bs-target="#deleteCourierModal{{ loop.index }}">Remove</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -111,8 +111,26 @@
     </div>
 </div>
 
-
-
+<!-- Delete Courier Modal -->
+ <div class="modal fade" id="deleteCourierModal{{ loop.index }}" tabindex="-1" aria-labelledby="deleteCourierModal{{ loop.index }}Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteCourierModal{{ loop.index }}Label">Remove Courier</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to Remove {{ courier_ids[loop.index0] }}?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="/api/delete_courier/{{ courier_ids[loop.index0] }}">
+                        <button type="button" class="btn btn-gray-800" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endfor %}
 {% endblock content %}
 

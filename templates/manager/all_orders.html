@@ -9,7 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-notify/0.2.0/js/bootstrap-notify.min.js"></script>    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<script type="text/javascript" src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
 {% endblock stylesheets %}
 
 {% block content %}
@@ -26,6 +27,7 @@
                         <th>Recipient Name</th>
                         <th>Status</th>
                         <th>Action</th>
+                        <th>Assigned to</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,6 +38,11 @@
                             <td>{{ order.sender_name }}</td>
                             <td>{{ order.recipient_name }}</td>
                             <td>{{ order.status }}</td>
+                            {% if order.courier_id %}
+                                <td>{{ order.courier_id }}</td>
+                            {% else %}
+                                <td>Not Assigned</td>
+                            {% endif %}
                             <td>
                                 <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewOrderModal{{ loop.index }}">View</a>
                                 <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editOrderModal{{ loop.index }}">Edit</a>
@@ -218,11 +225,10 @@
                         <option value="{{ courier }}">{{ courier }}</option>
                     {% endfor %}
                 </select>
-                <div id="confirmationMessage" style="display: none;">Courier assigned successfully!</div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="assignCourier('{{ order_ids[loop.index0] }}', '{{ loop.index0 }}')"  data-bs-dismiss="modal">Assign</button>
+                <button type="button" class="btn btn-primary" onclick="assignCourier('{{ order_ids[loop.index0] }}', '{{ loop.index0 }}')" data-bs-dismiss="modal">Assign</button>
             </div>
         </div>
     </div>
@@ -236,6 +242,24 @@
 {% block javascripts %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+     var notyf = new Notyf({
+        position: {
+            x: 'right',
+            y: 'top',
+        },
+        types: [
+            {
+                type: 'success',
+                background: 'green',
+                icon: {
+                    className: 'fas fa-info-circle',
+                    tagName: 'span',
+                    color: '#fff'
+                },
+                dismissible: true
+            }
+        ]
+    });
     function assignCourier(order_id, modalIndex) {
         // Get the selected courier_id from the select element
         var courierSelect = document.querySelector(`#courierSelect${modalIndex}`);
@@ -253,11 +277,21 @@
             data: JSON.stringify(data),
             success: function(response) {
                 // Handle success response here
-                $('#confirmationMessage').fadeIn();
+                notyf.open({
+                    type: 'success',
+                    message: 'Successfully assigned courier!'
+                });
                 console.log(response);
+                setTimeout(function() {
+                    location.reload();
+                }, 2500);
             },
             error: function(error) {
                 // Handle error response here
+                notyf.open({
+                    type: 'error',
+                    message: 'Error assigning courier!'
+                });
                 console.error(error);
             }
 });
@@ -289,6 +323,7 @@
         type: 'success',
         message: 'Action successful!'
     });
+
 </script>
 {% endif %}
 

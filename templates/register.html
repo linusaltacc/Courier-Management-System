@@ -4,6 +4,90 @@
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
+<style>
+
+body {
+        margin: 0;
+      }
+
+      .sb-title {
+        position: relative;
+        top: -12px;
+        font-family: Roboto, sans-serif;
+        font-weight: 500;
+      }
+
+      .sb-title-icon {
+        position: relative;
+        top: -5px;
+      }
+
+      .card-container {
+        display: flex;
+        height: 500px;
+        width: 600px;
+      }
+
+      .panel {
+        background: white;
+        width: 300px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+
+      .half-input-container {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .half-input {
+        max-width: 120px;
+      }
+
+      /* .map {
+        width: 150px;
+      } */
+
+      h2 {
+        margin: 0;
+        font-family: Roboto, sans-serif;
+      }
+
+      input {
+        height: 30px;
+      }
+
+      input {
+        border: 0;
+        border-bottom: 1px solid black;
+        font-size: 14px;
+        font-family: Roboto, sans-serif;
+        font-style: normal;
+        font-weight: normal;
+      }
+
+      input:focus::placeholder {
+        color: white;
+      }
+
+      .button-cta {
+        align-self: start;
+        background-color: #1976d2;
+        border: 0;
+        border-radius: 21px;
+        color: white;
+        cursor: pointer;
+        font-family: "Google Sans Text", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 27px;
+        padding: 3.5px 10.5px;
+      }
+   
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans+Text:500&amp;lang=en">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js'></script>
 <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js'></script>
@@ -84,9 +168,22 @@
                                                     </svg>   
                                             </span>
                                             </span>
-                                          <input type="password" class="form-control" id="validationPassword" minlength="8" name="password" placeholder="Password" value="" required>
+                                          <input type="password" class="form-control" id="validationPassword" minlength="8" maxlength="20" name="password" placeholder="Password" value="" required>
+                                          <i id="togglePassword" class="fa fa-eye input-group-text"></i>
+                                          <script>
+                                            const togglePassword = document.querySelector('#togglePassword');
+                                            const password = document.querySelector('#validationPassword');
+                                          
+                                            togglePassword.addEventListener('click', function (e) {
+                                              // toggle the type attribute
+                                              const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                                              password.setAttribute('type', type);
+                                              // toggle the eye slash icon
+                                              this.classList.toggle('fa-eye-slash');
+                                            });
+                                          </script>
                                           <small id="passwordHelpBlock" class="form-text text-muted">
-                                            Your password must be minimum 8 characters long,  must contain special characters "!@#$%&*_?", numbers, lower and upper letters only.
+                                            Your password must be minimum 8 & maximum 20 charachers long,  must contain special characters "!@#$%&*_?", numbers, lower and upper letters only.
                                 </small>
                         
                                         <div id="feedbackin" class="valid-feedback">
@@ -118,50 +215,78 @@
                                     </div>
                                     <br>
                                     <div class="form-group">
+                                        <div class="form-group mb-4">
+                                            <label for="streetAddress">Address Line 1</label>
+                                            <input type="text" class="form-control" id="location-input" name="streetAddress" onchange="validateStreetAddress();" required>
+                                        </div>
+                                        <div class="form-group mb-4">
+                                            <label for="streetAddress">Address Line 2</label>
+                                            <input type="text" class="form-control" placeholder="Apt No., Suite, etc" name="line2address" id="line2address" oninput="autocompleteline2();" onchange="validateLine2Address();" required/>
+                                        </div>
+                                        <script>
+                                            // Initialize the Places Autocomplete
+                                            function autocompleteline2() {
+                                                var line2addressInput = document.getElementById('line2address');
+                                                var state = document.getElementById('administrative_area_level_1-input');
+                                                var city = document.getElementById('locality-input');
+                                                var autocomplete = new google.maps.places.Autocomplete(line2addressInput, {
+                                                    componentRestrictions: { country: 'IN'} // Restrict to India
+                                                });
+                                            };
+                                        </script>
                                         <div class="row">
+                                            <div class="form-group mb-4">
+                                                <label for="country">Country</label>
+                                                <select id="country" name="country" class='form-control' oninput="validateCountry();">
+                                                    <option value="">-- Country --</option>
+                                                </select>
+                                                 <!-- <input type="text" placeholder="Country" name="country" class="form-control" id="country-input"/> -->
+                                            </div>
                                             <div class="col-md-6">
                                                 <div class="form-group mb-4">
-                                                    <label for="country">Country</label>
-                                                    <select id="country" name="country" class='form-control' onchange="validateCountry();">
-                                                        <option value="">-- Country --</option>
+                                                    <label for="state">State</label>
+                                                    <select id="state" name="state" class='form-control' onchange="validateState();">
+                                                        <option value="">-- State --</option>
                                                     </select>
+                                                    <!-- <input type="text" class="half-input form-control" placeholder="State" id="administrative_area_level_1-input"  name="state" oninput="validateState();" required/> -->
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group mb-4">
-                                                    <label for="state">State/Province</label>
-                                                    <select id="region" name="state" class='form-control' onchange="validateState();">
-                                                        <option value="">-- State --</option>
-                                                    </select>
+                                                    <label for="city">City</label>
+                                                    <!-- <select id="city" name="city" class='form-control' onchange="validateCity();">
+                                                        <option value="">-- City --</option>
+                                                    </select> -->
+                                                    <input type="text" placeholder="City" name="city" class="form-control" id="locality-input" oninput="validateCity();" required/>
+
                                                 </div>
+                                            </div>
+                                           
+                                           
+                                            <div class="form-group mb-4">
+                                                <label for="postalCode">Postal Code</label>
+                                                <input type="text" class="form-control" id="postalCode" name="postalCode" onchange="validatePostalCode();" maxlength="6" required>
+                                                <div class="invalid-feedback" id="postalCodeError">Postal Code is Required.</div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group mb-4">
-                                        <label for="city">City</label>
-                                        <select id="city" name="city" class='form-control' onchange="validateCity();">
-                                            <option value="">-- City --</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group mb-4">
-                                        <label for="streetAddress">Street Address</label>
-                                        <input type="text" class="form-control" id="streetAddress" name="streetAddress" onchange="validateStreetAddress();" required>
-                                    </div>
-                                    <div class="form-group mb-4">
-                                        <label for="postalCode">Postal Code</label>
-                                        <input type="text" class="form-control" id="postalCode" name="postalCode" onchange="validatePostalCode();" maxlength="6" required>
-                                        <div class="invalid-feedback" id="postalCodeError">Postal Code is Required.</div>
-                                    </div>
+                                        <div class="map" id="gmp-map"></div>
+                                      <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,marker&callback=initMap&solution_channel=GMP_QB_addressselection_v2_cABC" async defer></script>                                  
                                     <div class="form-group mb-4">
                                         <label for="phone">Phone Number</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon1">
+                                                <i class="fas fa-phone"> + 91 </i>
+                                            </span>
                                         <input type="numeric" class="form-control" id="phone" name="phone" oninput="validatePhone();" maxlength="10" required>
+                                        </div>
                                         <div class="invalid-feedback" id="phoneError">Phone Number is Required.</div>
                                     </div>
                                     <!-- End of Form -->
                                     <div class="mb-4">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="remember" required>
-                                            <label class="form-check-label fw-normal mb-0" for="remember">
+                                            <input class="form-check-input" type="checkbox" value="" id="terms" required>
+                                            <label class="form-check-label fw-normal mb-0" for="terms">
                                                 I agree to the <a href="#" class="fw-bold">terms and conditions</a>
                                             </label>
                                         </div>
@@ -189,6 +314,93 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <!-- Add this script to the end of your HTML body -->
+<script>
+    "use strict";
+
+    const CONFIGURATION = {
+      "ctaTitle": "Confirm address",
+      "mapOptions": {"center":{"lat":37.4221,"lng":-122.0841},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":15,"zoomControl":true,"maxZoom":22,"mapId":""},
+      "mapsApiKey": "(( GOOGLE_MAPS_API_KEY ))",
+      "capabilities": {"addressAutocompleteControl":true,"mapDisplayControl":true,"ctaControl":true}
+    };
+
+    const SHORT_NAME_ADDRESS_COMPONENT_TYPES =
+        new Set(['street_number', 'administrative_area_level_1', 'postal_code']);
+
+    const ADDRESS_COMPONENT_TYPES_IN_FORM = [
+      'location',
+      'locality',
+      'administrative_area_level_1',
+      'postal_code',
+      'country',
+    ];
+
+    function getFormInputElement(componentType) {
+      return document.getElementById(`${componentType}-input`);
+    }
+
+    function fillInAddress(place) {
+      function getComponentName(componentType) {
+        for (const component of place.address_components || []) {
+          if (component.types[0] === componentType) {
+            return SHORT_NAME_ADDRESS_COMPONENT_TYPES.has(componentType) ?
+                component.short_name :
+                component.long_name;
+          }
+        }
+        return '';
+      }
+
+      function getComponentText(componentType) {
+        return (componentType === 'location') ?
+            `${getComponentName('street_number')} ${getComponentName('route')}` :
+            getComponentName(componentType);
+      }
+
+      for (const componentType of ADDRESS_COMPONENT_TYPES_IN_FORM) {
+        getFormInputElement(componentType).value = getComponentText(componentType);
+      }
+    }
+
+    function renderAddress(place, map, marker) {
+      if (place.geometry && place.geometry.location) {
+        map.setCenter(place.geometry.location);
+        marker.position = place.geometry.location;
+      } else {
+        marker.position = null;
+      }
+    }
+
+    async function initMap() {
+      const {Map} = google.maps;
+      const {AdvancedMarkerElement} = google.maps.marker;
+      const {Autocomplete} = google.maps.places;
+
+      const mapOptions = CONFIGURATION.mapOptions;
+      mapOptions.mapId = mapOptions.mapId || 'DEMO_MAP_ID';
+      mapOptions.center = mapOptions.center || {lat: 37.4221, lng: -122.0841};
+
+      const map = new Map(document.getElementById('gmp-map'), mapOptions);
+      const marker = new AdvancedMarkerElement({map});
+      const autocomplete = new Autocomplete(getFormInputElement('location'), {
+        fields: ['address_components', 'geometry', 'name'],
+        types: ['address'],
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry) {
+          // User entered the name of a Place that was not suggested and
+          // pressed the Enter key, or the Place Details request failed.
+          window.alert(`No details available for input: '${place.name}'`);
+          return;
+        }
+        renderAddress(place, map, marker);
+        fillInAddress(place);
+      });
+    }
+  </script>
+
 <script>
     (function() {
         'use strict';
@@ -324,22 +536,47 @@
 </script>
 <script>
     function validateUsername() {
-    var username = document.getElementById("username").value;
-    if (username.length < 4) {
-        document.getElementById("username").classList.add("is-invalid");
-        document.getElementById("username").classList.remove("is-valid");
-        document.getElementById("usernameError").innerHTML = "Please enter a valid username.";
-    } else {
-        document.getElementById("username").classList.add("is-valid");
-        document.getElementById("username").classList.remove("is-invalid");
-    }
-};
+        var username = document.getElementById("username").value;
+        if (username.length < 4 || username.length > 20) {
+            document.getElementById("username").classList.add("is-invalid");
+            document.getElementById("username").classList.remove("is-valid");
+            document.getElementById("usernameError").innerHTML = "Please enter a valid username. Username must be between 4 and 20 characters.";
+        } else {
+            if (/^[a-zA-Z0-9!@#$&_./?]+$/.test(username) != true) {
+                document.getElementById("username").classList.add("is-invalid");
+                document.getElementById("username").classList.remove("is-valid");
+                document.getElementById("usernameError").innerHTML = "Only letters, numbers and Special Characters ( ! @ # $ & _ . / ?) are allowed!";
+            } else {
+                document.getElementById("username").classList.add("is-valid");
+                document.getElementById("username").classList.remove("is-invalid");
+                document.getElementById("usernameError").innerHTML = "";
+            }
+        }
+    };
     function validateEmail() {
         var email = document.getElementById("email").value;
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        var allowedDomains = ["gmail.com", "yahoo.com", "hotmail.com"];  // Add allowed domains here
+
         if (emailRegex.test(email)) {
-            document.getElementById("email").classList.add("is-valid");
-            document.getElementById("email").classList.remove("is-invalid");
+            var emailParts = email.split('@');
+            var username = emailParts[0];
+            var domain = emailParts[1];
+
+            if (allowedDomains.includes(domain)) {
+                if (domain === "gmail.com" && username.length < 6) {
+                    alert("Gmail username must be at least 6 characters long.");
+                    document.getElementById("email").classList.add("is-invalid");
+                    document.getElementById("email").classList.remove("is-valid");
+                } else {
+                    document.getElementById("email").classList.add("is-valid");
+                    document.getElementById("email").classList.remove("is-invalid");
+                }
+            } else {
+                alert("Email domain must be one of the following: " + allowedDomains.join(", "));
+                document.getElementById("email").classList.add("is-invalid");
+                document.getElementById("email").classList.remove("is-valid");
+            }
         } else {
             document.getElementById("email").classList.add("is-invalid");
             document.getElementById("email").classList.remove("is-valid");
@@ -358,52 +595,70 @@
 };
 
 function validateState() {
-    var state = document.getElementById("region").value;
+    var state = document.getElementById("state").value;
     if (!state) {
-        document.getElementById("region").classList.add("is-invalid");
-        document.getElementById("region").classList.remove("is-valid");
+        document.getElementById("state").classList.add("is-invalid");
+        document.getElementById("state").classList.remove("is-valid");
     } else {
-        document.getElementById("region").classList.add("is-valid");
-        document.getElementById("region").classList.remove("is-invalid");
+        document.getElementById("state").classList.add("is-valid");
+        document.getElementById("state").classList.remove("is-invalid");
     }
 }
 
 function validateCity() {
-    var city = document.getElementById("city").value;
+    var city = document.getElementById("locality-input").value;
     if (!city) {
-        document.getElementById("city").classList.add("is-invalid");
-        document.getElementById("city").classList.remove("is-valid");
+        document.getElementById("locality-input").classList.add("is-invalid");
+        document.getElementById("locality-input").classList.remove("is-valid");
     } else {
-        document.getElementById("city").classList.add("is-valid");
-        document.getElementById("city").classList.remove("is-invalid");
+        document.getElementById("locality-input").classList.add("is-valid");
+        document.getElementById("locality-input").classList.remove("is-invalid");
     }
 }
 
 function validateStreetAddress() {
-    var streetAddress = document.getElementById("streetAddress").value;
+    var streetAddress = document.getElementById("location-input").value;
     if (!streetAddress) {
-        document.getElementById("streetAddress").classList.add("is-invalid");
-        document.getElementById("streetAddress").classList.remove("is-valid");
+        document.getElementById("location-input").classList.add("is-invalid");
+        document.getElementById("location-input").classList.remove("is-valid");
     } else {
-        document.getElementById("streetAddress").classList.add("is-valid");
-        document.getElementById("streetAddress").classList.remove("is-invalid");
+        document.getElementById("location-input").classList.add("is-valid");
+        document.getElementById("location-input").classList.remove("is-invalid");
+    }
+}
+function validateLine2Address() {
+    var line2Address = document.getElementById("line2address").value;
+    if (!line2Address) {
+        document.getElementById("line2address").classList.add("is-invalid");
+        document.getElementById("line2address").classList.remove("is-valid");
+    } else {
+        document.getElementById("line2address").classList.add("is-valid");
+        document.getElementById("line2address").classList.remove("is-invalid");
     }
 }
 
+// document.addEventListener("DOMContentLoaded", function (event) {
 function validatePostalCode() {
-    var postalCode = document.getElementById("postalCode").value;
-    var regex = /^[0-9]{6}?$/;
-    if (!regex.test(postalCode)) {
-        document.getElementById("postalCode").classList.add("is-invalid");
-        document.getElementById("postalCode").classList.remove("is-valid");
-        document.getElementById("postalCodeError").innerHTML = "Please enter a valid postal code.";
-    } else {
-        document.getElementById("postalCode").classList.add("is-valid");
-        document.getElementById("postalCode").classList.remove("is-invalid");
-        document.getElementById("postalCodeError").innerHTML = "";
+        var postalCode = document.getElementById("postalCode").value;
+        $.getJSON("https://api.postalpincode.in/pincode/" + postalCode, function (data) {
+            
+            if (data[0].Status === 'Success') {
+                document.getElementById("postalCode").classList.add("is-valid");
+                document.getElementById("postalCode").classList.remove("is-invalid");
+                document.getElementById("postalCodeError").innerHTML = "";
+                console.log(data[0].PostOffice[0].State);
+                console.log(data[0].PostOffice[0].District);
+                console.log(data[0].PostOffice[0].Name);
+            } else {
+                document.getElementById("postalCode").classList.add("is-invalid");
+                document.getElementById("postalCode").classList.remove("is-valid");
+                document.getElementById("postalCodeError").innerHTML = "Please enter a valid postal code.";
+            }
+        })
     }
-}
 
+    // document.getElementById("submit").addEventListener("click", validatePostalCode);
+// });
 function validatePhone() {
     var phone = document.getElementById("phone").value;
     if (/^(\d+,)*(\d+)$/.test(phone) != true){
@@ -435,88 +690,95 @@ function validatePhone() {
 // document.getElementById("streetAddress").addEventListener("change", validateStreetAddress);
 // document.getElementById("postalCode").addEventListener("change", validatePostalCode);
 // document.getElementById("phone").addEventListener("change", validatePhone);
-    function validation() {
-        const name = document.getElementById("username").value;
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("validationPassword").value;
-        const country = document.getElementById("country").value;
-        const state = document.getElementById("region").value;
-        const city = document.getElementById("city").value;
-        const streetAddress = document.getElementById("streetAddress").value;
-        const postalCode = document.getElementById("postalCode").value;
-        const role = document.getElementById("role").value;
-        const phone = document.getElementById("phone").value;
-
-        if (!name || !email || !password || !country || !state || !city || !streetAddress || !postalCode || !role || !phone) {
-            event.preventDefault(); // Prevent form submission
-            if (!name) {
-                document.getElementById("username").classList.add("is-invalid");
-            }
-            if (!email) {
-                document.getElementById("email").classList.add("is-invalid");
-            }
-            if (!country) {
-                document.getElementById("country").classList.add("is-invalid");
-            }
-            if (!state) {
-                document.getElementById("region").classList.add("is-invalid");
-            }
-            if (!city) {
-                document.getElementById("city").classList.add("is-invalid");
-            }
-            if (!streetAddress) {
-                document.getElementById("streetAddress").classList.add("is-invalid");
-            }
-            if (!postalCode) {
-                document.getElementById("postalCode").classList.add("is-invalid");
-            }
-            if (!role) {
-                document.getElementById("role").classList.add("is-invalid");
-            }
-            if (!phone) {
-                document.getElementById("phone").classList.add("is-invalid");
-            }
+function validation() {
+    const name = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("validationPassword").value;
+    const country = document.getElementById("country").value;
+    const state = document.getElementById("state").value;
+    const city = document.getElementById("locality-input").value;
+    const streetAddress = document.getElementById("location-input").value;
+    const line2address = document.getElementById("line2address").value;
+    const postalCode = document.getElementById("postalCode").value;
+    const role = document.getElementById("role").value;
+    const phone = document.getElementById("phone").value;
+    
+    if (!name || !email || !password || !country || !state || !city || !streetAddress || !line2address || !postalCode || !role || !phone) {
+        event.preventDefault(); // Prevent form submission
+        if (!name) {
+            document.getElementById("username").classList.add("is-invalid");
         }
-        if (name || email || password || country || state || city || streetAddress || postalCode || role || phone) {
-            if (name) {
-                document.getElementById("username").classList.add("is-valid");
-            }
-            if (email) {
-                document.getElementById("email").classList.add("is-valid");
-            }
-            if (password) {
-                document.getElementById("validationPassword").classList.add("is-valid");
-            }
-            if (country) {
-                document.getElementById("country").classList.add("is-valid");
-            }
-            if (state) {
-                document.getElementById("region").classList.add("is-valid");
-            }
-            if (city) {
-                document.getElementById("city").classList.add("is-valid");
-            }
-            if (streetAddress) {
-                document.getElementById("streetAddress").classList.add("is-valid");
-            }
-            if (postalCode) {
-                document.getElementById("postalCode").classList.add("is-valid");
-            }
-            if (role) {
-                document.getElementById("role").classList.add("is-valid");
-            }
-            if (phone) {
-                document.getElementById("phone").classList.add("is-valid");
-            }
-
-            if (name == "" || email == "" || password == "" || postalCode == "" || phone == "") {
-                alert("Please fill in all fields and agree to the terms and conditions.");
-                return false;
-            }
-            return true;
-
+        if (!email) {
+            document.getElementById("email").classList.add("is-invalid");
         }
-    };
+        if (!country) {
+            document.getElementById("country").classList.add("is-invalid");
+        }
+        if (!state) {
+            document.getElementById("state").classList.add("is-invalid");
+        }
+        if (!city) {
+            document.getElementById("locality-input").classList.add("is-invalid");
+        }
+        if (!streetAddress) {
+            document.getElementById("location-input").classList.add("is-invalid");
+        }
+        if (!line2address) {
+            document.getElementById("line2address").classList.add("is-invalid");
+        }
+        if (!postalCode) {
+            document.getElementById("postalCode").classList.add("is-invalid");
+        }
+        if (!role) {
+            document.getElementById("role").classList.add("is-invalid");
+        }
+        if (!phone) {
+            document.getElementById("phone").classList.add("is-invalid");
+        }
+    }
+    if (name || email || password || country || state || city || streetAddress || line2address || postalCode || role || phone) {
+        if (name) {
+            document.getElementById("username").classList.add("is-valid");
+        }
+        if (email) {
+            document.getElementById("email").classList.add("is-valid");
+        }
+        if (password) {
+            document.getElementById("validationPassword").classList.add("is-valid");
+        }
+        if (country) {
+            document.getElementById("country").classList.add("is-valid");
+        }
+        if (state) {
+            document.getElementById("state").classList.add("is-valid");
+        }
+        if (city) {
+            document.getElementById("locality-input").classList.add("is-valid");
+        }
+        if (streetAddress) {
+            document.getElementById("location-input").classList.add("is-valid");
+        }
+        if (line2address) {
+            document.getElementById("line2address").classList.add("is-valid");
+        }
+        if (postalCode) {
+            document.getElementById("postalCode").classList.add("is-valid");
+        }
+        if (role) {
+            document.getElementById("role").classList.add("is-valid");
+        }
+        if (phone) {
+            document.getElementById("phone").classList.add("is-valid");
+        }
+
+        if (name == "" || email == "" || password == "" || postalCode == "" || phone == "") {
+            alert("Please fill in all fields and agree to the terms and conditions.");
+            return false;
+        }
+        return true;
+
+    }
+};
 </script>
 
 <script>
@@ -654,89 +916,77 @@ function validatePhone() {
 </script>
 
 <script>
-$(document).ready(function() {
-  //-------------------------------SELECT CASCADING-------------------------//
-  var selectedCountry = (selectedRegion = selectedCity = "");
-  // This is a demo API key for testing purposes. You should rather request your API key (free) from http://battuta.medunes.net/
-  var BATTUTA_KEY = "00000000000000000000000000000000";
-  // Populate country select box from battuta API
-  url =
-    "https://battuta.medunes.net/api/country/all/?key=" +
-    BATTUTA_KEY +
-    "&callback=?";
+    $.ajax({
+        method: "GET",
+        url: "https://www.universal-tutorial.com/api/getaccesstoken",
+        headers: {
+            "Accept": "application/json",
+            "api-token": "{{UT_API}}",
+            "user-email": "{{UT_EMAIL}}"
+        },
+        success: function (response) {
+            var authToken = response.auth_token;
 
-  // EXTRACT JSON DATA.
-  $.getJSON(url, function(data) {
-    // console.log(data);
-    $.each(data, function(index, value) {
-      // APPEND OR INSERT DATA TO SELECT ELEMENT.
-      $("#country").append(
-        '<option value="' + value.code + '">' + value.name + "</option>"
-      );
-    });
-  });
-  // Country selected --> update region list .
-  $("#country").change(function() {
-    selectedCountry = this.options[this.selectedIndex].text;
-    countryCode = $("#country").val();
-    // Populate country select box from battuta API
-    url =
-      "https://battuta.medunes.net/api/region/" +
-      countryCode +
-      "/all/?key=" +
-      BATTUTA_KEY +
-      "&callback=?";
-    $.getJSON(url, function(data) {
-      $("#region option").remove();
-      $('#region').append('<option value="">Please select your region</option>');
-      $.each(data, function(index, value) {
-        // APPEND OR INSERT DATA TO SELECT ELEMENT.
-        $("#region").append(
-          '<option value="' + value.region + '">' + value.region + "</option>"
-        );
-      });
-    });
-  });
-  // Region selected --> updated city list
-  $("#region").on("change", function() {
-    selectedRegion = this.options[this.selectedIndex].text;
-    // Populate country select box from battuta API
-    countryCode = $("#country").val();
-    region = $("#region").val();
-    url =
-      "https://battuta.medunes.net/api/city/" +
-      countryCode +
-      "/search/?region=" +
-      region +
-      "&key=" +
-      BATTUTA_KEY +
-      "&callback=?";
-    $.getJSON(url, function(data) {
-    //   console.log(data);
-      $("#city option").remove();
-      $('#city').append('<option value="">Please select your city</option>');
-      $.each(data, function(index, value) {
-        // APPEND OR INSERT DATA TO SELECT ELEMENT.
-        $("#city").append(
-          '<option value="' + value.city + '">' + value.city + "</option>"
-        );
-      });
-    });
-  });
-  // city selected --> update location string
-  $("#city").on("change", function() {
-    selectedCity = this.options[this.selectedIndex].text;
-    $("#location").html(
-      "Locatation: Country: " +
-        selectedCountry +
-        ", Region: " +
-        selectedRegion +
-        ", City: " +
-        selectedCity
-    );
-  });
-});
+            $.ajax({
+                method: "GET",
+                url: "https://www.universal-tutorial.com/api/countries/",
+                headers: {
+                    "Authorization": "Bearer " + authToken,
+                    "Accept": "application/json"
+                },
+                success: function (response) {
+                    var countries = response;
+                    // Populate country dropdown
+                    var countryDropdown = document.getElementById('country');
+                    countries.forEach(function (country) {
+                        var option = document.createElement('option');
+                        option.text = country.country_name;
+                        option.value = country.country_name;
+                        countryDropdown.add(option);
+                    });
 
+                    countryDropdown.addEventListener('change', function () {
+                        var selectedCountry = this.value;
+
+                        $.ajax({
+                            method: "GET",
+                            url: "https://www.universal-tutorial.com/api/states/" + selectedCountry,
+                            headers: {
+                                "Authorization": "Bearer " + authToken,
+                                "Accept": "application/json"
+                            },
+                            success: function (response) {
+                                var states = response;
+                                // Populate state dropdown
+                                var stateDropdown = document.getElementById('state');
+                                stateDropdown.innerHTML = ''; // Clear previous options
+                                states.forEach(function (state) {
+                                    var option = document.createElement('option');
+                                    option.text = state.state_name;
+                                    option.value = state.state_name;
+                                    stateDropdown.add(option);
+                                });
+
+                                // Add event listener to state dropdown
+                                stateDropdown.addEventListener('change', function () {
+                                    var selectedState = this.value;
+
+                                    $.ajax({
+                                        method: "GET",
+                                        url: "https://www.universal-tutorial.com/api/cities/" + selectedState,
+                                        headers: {
+                                            "Authorization": "Bearer " + authToken,
+                                            "Accept": "application/json"
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+        }
+    });
 </script>
 
 

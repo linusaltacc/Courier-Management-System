@@ -53,21 +53,22 @@ def verify_otp(username, role, otp):
     else:
         return False
 
-def create_courier(username, email, password, streetAddress, city, state, country, phone, notifications={}):
+def create_courier(username, email, password, streetAddress, line2address, city, state, country, phone):
     courier_ref = db.collection("couriers").document(username)
+    notifications={}
     if not courier_ref.get().exists:
         courier_data = {
             "username": username,
             "email": email,
-            "password": hash_password(password), 
+            "password": hash_password(password),  
             "streetAddress": streetAddress,
+            "line2address": line2address,
             "city": city,
             "state": state,
             "country": country,
             "phone": phone,
-            "address": streetAddress + ", " + city + ", " + state + ", " + country,
-            "notifications": notifications, 
-            "avg_time": "0",
+            "address":  line2address + ", " + streetAddress + ", " + city + ", " + state + ", " + country,
+            "notifications": notifications
         }
         courier_ref.set(courier_data)
     else:
@@ -75,19 +76,21 @@ def create_courier(username, email, password, streetAddress, city, state, countr
         return False
 
 # Define a function to create a document for Customer
-def create_customer(username, email, password, streetAddress, city, state, country, phone, notifications={}):
+def create_customer(username, email, password, streetAddress, line2address, city, state, country, phone):
     customer_ref = db.collection("customers").document(username)
+    notifications={}
     if not customer_ref.get().exists:
         customer_data = {
             "username": username,
             "email": email,
             "password": hash_password(password),  
             "streetAddress": streetAddress,
+            "line2address": line2address,
             "city": city,
             "state": state,
             "country": country,
             "phone": phone,
-            "address": streetAddress + ", " + city + ", " + state + ", " + country,
+            "address":  line2address + ", " + streetAddress + ", " + city + ", " + state + ", " + country,
             "notifications": notifications
         }
         customer_ref.set(customer_data)
@@ -95,19 +98,21 @@ def create_customer(username, email, password, streetAddress, city, state, count
         print("Customer already exists")
         return False
 
-def create_manager(username, email, password, streetAddress, city, state, country, phone, notifications={}):
+def create_manager(username, email, password, streetAddress, line2address, city, state, country, phone):
     manager_ref = db.collection("managers").document(username)
+    notifications={}
     if not manager_ref.get().exists:
         manager_data = {
             "username": username,
             "email": email,
             "password": hash_password(password),  
             "streetAddress": streetAddress,
+            "line2address": line2address,
             "city": city,
             "state": state,
             "country": country,
             "phone": phone,
-            "address": streetAddress + ", " + city + ", " + state + ", " + country,
+            "address":  line2address + ", " + streetAddress + ", " + city + ", " + state + ", " + country,
             "notifications": notifications
         }
         manager_ref.set(manager_data)
@@ -166,37 +171,37 @@ def update_admin_password(username, password):
 
 # Admin Dashboard
 def get_admin_dashboard_details():
-        db_couriers = db.collection('couriers')
-        db_customers = db.collection('customers')
-        db_orders = db.collection('orders')
-        no_couriers = len(db_couriers.get())
-        no_customers = len(db_customers.get())
-        no_orders = len(db_orders.get())
-        no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
-        no_orders_pending = len(db_orders.where(filter=FieldFilter('status', '==', 'Order assigned Courier')).get())
-        no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
-        return [no_couriers, no_customers, no_orders, no_orders_delivered, no_orders_pending, no_orders_in_transit]
+    db_couriers = db.collection('couriers')
+    db_customers = db.collection('customers')
+    db_orders = db.collection('orders')
+    no_couriers = db_couriers.count().get()[0][0].value
+    no_customers = db_customers.count().get()[0][0].value
+    no_orders = db_orders.count().get()[0][0].value
+    no_orders_delivered = db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).count().get()[0][0].value
+    no_orders_pending = db_orders.where(filter=FieldFilter('status', '==', 'Order assigned Courier')).count().get()[0][0].value
+    no_orders_in_transit = db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).count().get()[0][0].value
+    return [no_couriers, no_customers, no_orders, no_orders_delivered, no_orders_pending, no_orders_in_transit]
 
 def get_courier_dashboard_details(courier_id):
-        try:
-            db_orders = db.collection('orders').where(filter=FieldFilter('courier_id', '==', courier_id))
-            no_orders_assigned = len(db_orders.get())
-            no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
-            no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
-            return [no_orders_delivered, no_orders_assigned, no_orders_in_transit]
-        except:
-            return [0, 0, 0]
+    try:
+        db_orders = db.collection('orders').where(filter=FieldFilter('courier_id', '==', courier_id))
+        no_orders_assigned = len(db_orders.get())
+        no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
+        no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
+        return [no_orders_delivered, no_orders_assigned, no_orders_in_transit]
+    except:
+        return [0, 0, 0]
 def get_customer_dashboard_details(customer_id):
-        try:
-            db_orders = db.collection('orders').where(filter=FieldFilter('user_id', '==', customer_id))
-            no_orders = len(db_orders.get())
-            no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
-            no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
-            notifications =  db.collection('customers').document(customer_id).get().to_dict().get('notifications')
-            new_notifications = sorted(notifications)[len(notifications)-1]
-            return [no_orders_delivered, no_orders, no_orders_in_transit, notifications[new_notifications]['message']]
-        except:
-            return [0, 0, 0, 'No new notifications']
+    try:
+        db_orders = db.collection('orders').where(filter=FieldFilter('user_id', '==', customer_id))
+        no_orders = len(db_orders.get())
+        no_orders_delivered = len(db_orders.where(filter=FieldFilter('status', '==', 'Delivered')).get())
+        no_orders_in_transit = len(db_orders.where(filter=FieldFilter('status', '==', 'In Transit')).get())
+        notifications =  db.collection('customers').document(customer_id).get().to_dict().get('notifications')
+        new_notifications = sorted(notifications)[len(notifications)-1]
+        return [no_orders_delivered, no_orders, no_orders_in_transit, notifications[new_notifications]['message']]
+    except:
+        return [0, 0, 0, 'No new notifications']
 # Get all couriers
 def get_all_couriers():
     couriers_ref = db.collection("couriers").stream()
